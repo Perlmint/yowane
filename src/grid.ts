@@ -52,6 +52,10 @@ export class Point {
         }
     }
 
+    static added(point1: Point, point2: Point): Point {
+        return (new Point(point1)).add(point2);
+    }
+
     add(point: Point): this {
         this.x += point.x;
         this.y += point.y;

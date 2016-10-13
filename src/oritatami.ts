@@ -55,9 +55,9 @@ export class Rule {
 
 Rule.seperator = String.fromCharCode(12288);
 
-interface Iterator {
-    next();
-    all();
+interface Iterator<T> {
+    predict(): T[]|null;
+    next(choice: T): boolean;
 }
 
 export class Oritatami {
@@ -71,14 +71,14 @@ export class Oritatami {
         this.generatePossibleWays();
     }
 
-    push(grid: Grid, beginPoint: Point, sequence: string): Iterator {
+    push(grid: Grid, beginPoint: Point, sequence: string): Iterator<Point> {
         const length = sequence.length;
         // prepare empty tail
         sequence.concat(" ".repeat(this.free - 1));
         let point = new Point(beginPoint);
         let i = 0;
 
-        const next = () => {
+        const predict = (): Point[]|null => {
             if (i < length) {
                 const partialSeq = sequence.substr(i, this.free);
                 // try all possible ways
@@ -110,7 +110,7 @@ export class Oritatami {
                             mostStablePower = power;
                             mostStablePath = [path];
                         } else if (mostStablePower === power) {
-                            mostStablePath.concat(path);
+                            mostStablePath = mostStablePath.concat([path]);
                         }
                     }
                 }
@@ -119,22 +119,32 @@ export class Oritatami {
                     console.error("Possible path is not exists");
                     return null;
                 } else {
-                    if (mostStablePath.length > 1) {
-                        console.error("Non deterministic case");
-                    }
-                    point = point.add(Point.directions.toArray()[mostStablePath[0][0]]);
-                    grid.put(point, partialSeq[0]);
-                    i++;
-                    return point;
+                    // prevent duplicated...
+                    const ret = [];
+                    mostStablePath.forEach((v) => {
+                        const newPoint = Point.added(point, Point.directions.toArray()[v[0]]);
+                        if (ret.find((v) => v.x === newPoint.x && v.y === newPoint.y) == null) {
+                            ret.push(newPoint);
+                        }
+                    });
+                    return ret;
                 }
             } else {
                 return null;
             }
         };
         return {
-            next: next,
-            all() {
-                while (next() !== null);
+            predict: predict,
+            next(p: Point): boolean {
+                if (i >= length) {
+                    return false;
+                }
+                point = p;
+                if (!grid.put(point, sequence[i])) {
+                    return false;
+                }
+                i++;
+                return true;
             }
         };
     }

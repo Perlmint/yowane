@@ -33,7 +33,7 @@ export class Point {
 
     constructor(p: Point);
     constructor(x?: number, y?: number);
-    constructor(arg1?: number|Point, y?: number) {
+    constructor(arg1?: number | Point, y?: number) {
         if (arg1 == null) {
             return;
         } else {
@@ -104,7 +104,7 @@ export class AdjacentGrid {
 };
 
 export class Grid {
-    _data: {[key: string]: string};
+    _data: { [key: string]: string };
 
     constructor() {
         this._data = {};
@@ -113,6 +113,21 @@ export class Grid {
     static toKey(point: Point): string {
         return `${point.x}:${point.y}`;
     }
+
+    static parseKey(str: string): Point {
+        let reg = /^(-?\d+):(-?\d+)$/;
+        let result = reg.exec(str);
+        if (result === null) {
+            return null;
+        }
+
+        let pt = new Point();
+        pt.x = parseInt(result[1]);
+        pt.y = parseInt(result[2]);
+
+        return pt;
+    }
+
 
     put(point: Point, value: string): boolean {
         let key = Grid.toKey(point);
@@ -162,5 +177,18 @@ export class Grid {
         ret.c = this.get(point);
 
         return ret;
+    }
+
+    getAll(): Array<[Point, string]> {
+        let copy: Array<[Point, string]> = Array<[Point, string]>();
+
+        for (let i in this._data) {
+            let pt = Grid.parseKey(i);
+            if (pt !== null) {
+                copy.push([pt, this._data[i]]);
+            }
+        }
+
+        return copy;
     }
 }

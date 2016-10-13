@@ -142,7 +142,7 @@ $(document).ready(() => {
 
         drawFuncList[drawIndex]();
         ++drawIndex;
-    }, 1000);
+    }, 300);
 });
 
 function drawCircle(paper: RaphaelPaper, x: number, y: number, text: string) {

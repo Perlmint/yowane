@@ -20,7 +20,7 @@ describe("Grid", () => {
         assert.isTrue(grid.put(new Point(0, 0), "a"));
         assert.isFalse(grid.put(new Point(0, 0), "b"));
         assert.isTrue(grid.put(new Point(0, 1), "c"));
-    })
+    });
 
     it("remove", () => {
         let grid = new Grid();

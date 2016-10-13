@@ -104,7 +104,7 @@ export class AdjacentGrid {
 };
 
 export class Grid {
-    _data: {[key:string]:string};
+    _data: {[key: string]: string};
 
     constructor() {
         this._data = {};
@@ -148,7 +148,7 @@ export class Grid {
 
         let values: (string)[] = new Array(7);
         let idx = 0;
-        for(let delta of Point.directions.toArray()) {
+        for (let delta of Point.directions.toArray()) {
             let newPoint = new Point(point.x + delta.x, point.y + delta.y);
             values[idx] = this.get(newPoint);
             idx++;

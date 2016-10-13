@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-babel-node/register test/*"
+    "test": "mocha --require ts-babel-node/register test/*",
+    "lint": "tslint"
   },
   "author": "",
   "license": "ISC",

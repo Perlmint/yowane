@@ -46,35 +46,59 @@ $(document).ready(() => {
     console.log(grid);
 
     let allPoints = grid.getAll();
+    let circleList: [number, number, string][] = [];
+    let pathStrList: Array<string> = Array<string>();
 
     for (let i = 0; i < allPoints.length; ++i) {
         let elem = allPoints[i];
         let pt = elem[0];
         let val = elem[1];
-        let x = 100 + pt.x * 100;
-        let y = 100 + pt.y * 100;
+        let screenCoord = getScreenCoord(pt.x, pt.y);
 
-        let nextElem: [Point, string];
+        let nextElem: [Point, string] = null;
         let nextPt: Point;
         let nextVal: string;
-        let nextX: number;
-        let nextY: number;
+        let nextScreenCoord: [number, number];
 
         if (i !== allPoints.length - 1) {
             nextElem = allPoints[i + 1];
             nextPt = nextElem[0];
             nextVal = nextElem[1];
-            nextX = 100 + nextPt.x * 100;
-            nextY = 100 + nextPt.y * 100;
+            nextScreenCoord = getScreenCoord(nextPt.x, nextPt.y);
         }
 
-        paper.circle(x, y, 10);
-        paper.text(x, y, val);
+        let circle: [number, number, string] = [screenCoord[0], screenCoord[1], val];
+        circleList.push(circle);
 
         if (nextElem !== null) {
-            let pathStr = `M${x},${y}L${nextX},${nextY}`;
-            console.log(pathStr);
-            paper.path(pathStr);
+            let pathStr = `M${screenCoord[0]},${screenCoord[1]}L${nextScreenCoord[0]},${nextScreenCoord[1]}`;
+            pathStrList.push(pathStr);
         }
     }
+
+    pathStrList.forEach(element => {
+        paper.path(element);
+    });
+
+    circleList.forEach(element => {
+        let x = element[0];
+        let y = element[1];
+        let text = element[2];
+
+        paper.circle(x, y, 10).attr("fill", "#FFFFFF");
+        paper.text(x, y, text).attr("font-size", 15);
+    });
 });
+
+function getScreenCoord(x: number, y): [number, number] {
+    let tempX = x + Math.cos(Math.PI / 3) * y;
+    let tempY = Math.sin(Math.PI / 3) * y;
+
+    let retX = 100 * (1 + tempX);
+    let retY = 100 * (1 + tempY);
+
+    let ret: [number, number] = [retX, retY];
+    console.log(ret);
+
+    return ret;
+}

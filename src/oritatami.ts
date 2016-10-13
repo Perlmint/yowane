@@ -70,7 +70,7 @@ export class Oritatami {
         let adjacents = grid.getNear(point);
         let ret = 0;
 
-        let acc = (curVal: ?string) => {
+        let acc = (curVal: string) => {
             if (curVal == null) {
                 return;
             }
@@ -78,9 +78,9 @@ export class Oritatami {
         }
         acc(adjacents.u);
         acc(adjacents.lu);
-        acc(adjacents.ru);
+        acc(adjacents.l);
         acc(adjacents.d);
-        acc(adjacents.ld);
+        acc(adjacents.r);
         acc(adjacents.rd);
 
         return ret;
@@ -96,7 +96,7 @@ export class Oritatami {
         let generator = (way: number[], level : number) => {
             let idx = 1;
             let clonedWay = way.slice(0, way.length);
-            for(let dir of Point.directions) {
+            for(let dir of Point.directions.toArray()) {
                 point.add(dir);
                 if (temporalGrid.put(point, "")) {
                     clonedWay.push(idx);

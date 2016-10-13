@@ -1,5 +1,3 @@
-// @flow
-
 /*
 Direction  
   2      u
@@ -9,27 +7,38 @@ Direction
   5      d
 
 Coordinate System
-X axis   Y axis
-\      /
- \    /
-  \  /
-   \/
+   Y axis
+       /
+      /
+     /
+____/______ X axis
 
 Delta from 0
-       (-1,  1)
-(-1,  0)      ( 0,  1)
-       ( 0,  0)
-( 0, -1)      ( 1,  0)
-       ( 1,  -1)
+
+   lu(-1, 1) (0, 1)u
+l(-1, 0) (0, 0) r(1, 0)
+   d(0, -1) rd(1, -1)
 */
+
+interface AdjacentPoints {
+    l: Point;
+    lu: Point;
+    u: Point;
+    c: Point;
+    r: Point;
+    rd: Point;
+    d: Point;
+}
 
 export class Point {
     x: number;
     y: number;
 
-    static directions: this[];
+    static directions: {
+        toArray(): Point[],
+    } & AdjacentPoints;
 
-    constructor(x: ?number, y: ?number) {
+    constructor(x?: number, y?: number) {
         if (x == null) {
             return;
         } else {
@@ -59,24 +68,35 @@ export class Point {
     }
 }
 
-Point.directions = [
-    new Point(-1, 0),
-    new Point(-1, 1),
-    new Point(0, 1),
-    new Point(1, 0),
-    new Point(1, -1),
-    new Point(0, -1)
+const directions = [
+    new Point(-1, 0), // l
+    new Point(-1, 1), // lu
+    new Point(0, 1),  // u
+    new Point(1, 0),  // r
+    new Point(1, -1), // rd
+    new Point(0, -1)  // d
 ];
 
+Point.directions = {
+    toArray: () => directions,
+    l: directions[0],
+    lu: directions[1],
+    u: directions[2],
+    c: new Point(0, 0),
+    r: directions[3],
+    rd: directions[4],
+    d: directions[5]
+};
+
 export class AdjacentGrid {
-    lu: ?string;
-    u: ?string;
-    ru: ?string;
-    c: ?string;
-    ld: ?string;
-    rd: ?string;
-    d: ?string;
-}
+    l: string;
+    lu: string;
+    u: string;
+    c: string;
+    r: string;
+    rd: string;
+    d: string;
+};
 
 export class Grid {
     _data: {[key:string]:string};
@@ -109,7 +129,7 @@ export class Grid {
         }
     }
 
-    get(point: Point): ?string {
+    get(point: Point): string {
         let key = Grid.toKey(point);
         if (this._data.hasOwnProperty(key)) {
             return this._data[key];
@@ -121,22 +141,20 @@ export class Grid {
     getNear(point: Point): AdjacentGrid {
         let ret = new AdjacentGrid();
 
-        let values: (?string)[] = new Array(7);
+        let values: (string)[] = new Array(7);
         let idx = 0;
-        for(let delta of [[-1, 1], [-1, 0], [0, 1], [0, 0],
-                           [0, -1], [1, 0], [1, -1]]) {
-            let newPoint = new Point(point.x + delta[0], point.y + delta[1]);
+        for(let delta of Point.directions.toArray()) {
+            let newPoint = new Point(point.x + delta.x, point.y + delta.y);
             values[idx] = this.get(newPoint);
             idx++;
         }
-
-        ret.u = values[0];
+        ret.l = values[0];
         ret.lu = values[1];
-        ret.ru = values[2];
-        ret.c = values[3];
-        ret.ld = values[4];
-        ret.rd = values[5];
-        ret.d = values[6];
+        ret.u = values[2];
+        ret.r = values[3];
+        ret.rd = values[4];
+        ret.d = values[5];
+        ret.c = this.get(point);
 
         return ret;
     }

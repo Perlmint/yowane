@@ -55,6 +55,11 @@ export class Rule {
 
 Rule.seperator = String.fromCharCode(12288);
 
+interface Iterator {
+    next();
+    all();
+}
+
 export class Oritatami {
     free: number;
     _ways: (number[])[];
@@ -66,9 +71,79 @@ export class Oritatami {
         this.generatePossibleWays();
     }
 
-    getPower(grid: Grid, point: Point, value: string): number {
-        let adjacents = grid.getNear(point);
+    push(grid: Grid, beginPoint: Point, sequence: string): Iterator {
+        const length = sequence.length;
+        // prepare empty tail
+        sequence.concat(" ".repeat(this.free - 1));
+        let point = new Point(beginPoint);
+        let i = 0;
+
+        const next = () => {
+            if (i < length) {
+                const partialSeq = sequence.substr(i, this.free);
+                // try all possible ways
+                let mostStablePath: (number[])[] = [];
+                let mostStablePower: number = 0;
+                for (let path of this._ways) {
+                    let pointOnPath = new Point(point);
+                    let seqIndex = 0;
+                    let power = 0;
+                    const pushedPoints: Point[] = [];
+                    for (let dir of path) {
+                        pointOnPath.add(Point.directions.toArray()[dir]);
+                        if (!grid.put(pointOnPath, partialSeq[seqIndex])) {
+                            break;
+                        }
+                        pushedPoints.push(new Point(pointOnPath));
+                        power += this.getPower(grid, pointOnPath);
+                        seqIndex++;
+                    }
+                    // remove pushed points
+                    for (let point of pushedPoints) {
+                        grid.remove(point);
+                    }
+                    // path is invalid!
+                    if (seqIndex !== this.free) {
+                        continue;
+                    } else {
+                        if (mostStablePower < power) {
+                            mostStablePower = power;
+                            mostStablePath = [path];
+                        } else if (mostStablePower === power) {
+                            mostStablePath.concat(path);
+                        }
+                    }
+                }
+                if (mostStablePath === null) {
+                    // wtf: not possible path?!
+                    console.error("Possible path is not exists");
+                    return null;
+                } else {
+                    if (mostStablePath.length > 1) {
+                        console.error("Non deterministic case");
+                    }
+                    point = point.add(Point.directions.toArray()[mostStablePath[0][0]]);
+                    grid.put(point, partialSeq[0]);
+                    i++;
+                    return point;
+                }
+            } else {
+                return null;
+            }
+        };
+        return {
+            next: next,
+            all() {
+                while (next() !== null);
+            }
+        };
+    }
+
+
+    getPower(grid: Grid, point: Point): number {
+        const adjacents = grid.getNear(point);
         let ret = 0;
+        const value = adjacents.c;
 
         let acc = (curVal: string) => {
             if (curVal == null) {

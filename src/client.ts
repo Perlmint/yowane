@@ -143,20 +143,6 @@ $(document).ready(() => {
         drawFuncList[drawIndex]();
         ++drawIndex;
     }, 1000);
-
-    /*
-    pathStrList.forEach(element => {
-        drawPath(paper, element);
-    });
- 
-    circleList.forEach(element => {
-        let x = element[0];
-        let y = element[1];
-        let text = element[2];
- 
-        drawCircle(paper, x, y, text);
-    });
-    */
 });
 
 function drawCircle(paper: RaphaelPaper, x: number, y: number, text: string) {

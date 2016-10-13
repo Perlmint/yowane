@@ -10,40 +10,98 @@ describe("Oritatami", () => {
         assert.deepEqual(oritatami._ways, ways1);
     });
 
-    it("example1", () => {
-        let grid = new Grid();
-        grid.put(new Point(0, 0), "c");
-        grid.put(new Point(0, 1), "x");
+    it("example1-deterministic", () => {
+        const grid = new Grid();
         grid.put(new Point(-1, 2), "d");
+        grid.put(new Point(0, 1), "x");
+        grid.put(new Point(0, 0), "c");
+        grid.put(new Point(1, 0), "a");
+        grid.put(new Point(1, 1), "x");
+        grid.put(new Point(0, 2), "d");
 
-        grid.put(new Point(-1, 0), " ");
-        grid.put(new Point(-1, 1), " ");
-
-        let rule = new Rule()
+        const rule = new Rule()
             .add("a", "a", 1)
             .add("b", "b", 1)
             .add("c", "c", 1)
             .add("d", "d", 1);
 
-        let oritatami = new Oritatami(3, rule);
-        const itr = oritatami.push(grid, new Point(0, 0), "axdbxacxb");
-        itr.next();
-        assert.equal(grid.get(new Point(1, 0)), "a");
-        itr.next();
-        assert.equal(grid.get(new Point(1, 1)), "x");
-        itr.next();
-        assert.equal(grid.get(new Point(0, 2)), "d");
-        itr.next();
+        const oritatami = new Oritatami(3, rule);
+        const itr = oritatami.push(grid, new Point(0, 2), "bxacxb");
+        const goNext = () => {
+            const predicted = itr.predict();
+            assert.equal(predicted.length, 1, `expected length - 1 but ${predicted}`);
+            assert.isTrue(itr.next(predicted[0]), `expected success but failed. grid is ${grid}`);
+        };
+        goNext();
         assert.equal(grid.get(new Point(1, 2)), "b");
-        itr.next();
+        goNext();
         assert.equal(grid.get(new Point(2, 1)), "x");
-        itr.next();
+        goNext();
         assert.equal(grid.get(new Point(2, 0)), "a");
-        itr.next();
+        goNext();
         assert.equal(grid.get(new Point(3, 0)), "c");
-        itr.next();
+        goNext();
         assert.equal(grid.get(new Point(3, 1)), "x");
-        itr.next();
+        goNext();
         assert.equal(grid.get(new Point(2, 2)), "b");
+    });
+
+    it("example2-nondeterministic", () => {
+        const grid = new Grid();
+        grid.put(new Point(0, 0), "d");
+        grid.put(new Point(0, 1), "e");
+        grid.put(new Point(-1, 2), "x");
+        grid.put(new Point(-1, 3), "f");
+        grid.put(new Point(0, 3), "x");
+        grid.put(new Point(1, 3), "x");
+
+        const rule = new Rule()
+            .add("a", "f", 1)
+            .add("c", "e", 1)
+            .add("c", "d", 1)
+            .add("a", "d", 1)
+            .add("c", "f", 1);
+
+        const oritatami = new Oritatami(3, rule);
+        let itr = oritatami.push(grid, new Point(0, 1), "abc");
+        let predicted = itr.predict();
+        assert.equal(predicted.length, 2);
+        assert.include(predicted, new Point(1, 0));
+        assert.include(predicted, new Point(0, 2));
+
+        // path1
+        itr.next(new Point(1, 0));
+        predicted = itr.predict();
+        assert.equal(predicted.length, 1);
+        assert.include(predicted, new Point(1, 1));
+        itr.next(predicted[0]);
+        predicted = itr.predict();
+        assert.equal(predicted.length, 1);
+        assert.include(predicted, new Point(0, 2));
+        itr.next(predicted[0]);
+        assert.equal(grid.get(new Point(1, 0)), "a");
+        assert.equal(grid.get(new Point(1, 1)), "b");
+        assert.equal(grid.get(new Point(0, 2)), "c");
+
+        // clean
+        grid.remove(new Point(1, 0));
+        grid.remove(new Point(1, 1));
+        grid.remove(new Point(0, 2));
+
+        // path2
+        itr = oritatami.push(grid, new Point(0, 2), "abc");
+        itr.predict();
+        itr.next(new Point(0, 2));
+        predicted = itr.predict();
+        assert.equal(predicted.length, 1);
+        assert.include(predicted, new Point(1, 1));
+        itr.next(predicted[0]);
+        predicted = itr.predict();
+        assert.equal(predicted.length, 1);
+        assert.include(predicted, new Point(1, 0));
+        itr.next(predicted[0]);
+        assert.equal(grid.get(new Point(0, 2)), "a");
+        assert.equal(grid.get(new Point(1, 1)), "b");
+        assert.equal(grid.get(new Point(1, 0)), "c");
     });
 });

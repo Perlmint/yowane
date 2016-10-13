@@ -21,8 +21,10 @@
     "flow": "^0.2.3",
     "mocha": "^3.1.0",
     "ts-babel-node": "^1.0.0",
+    "ts-loader": "^0.9.1",
     "tslint": "^3.15.1",
     "typescript": "^2.0.3",
+    "typings": "^1.4.0",
     "webpack": "^1.13.2"
   }
 }

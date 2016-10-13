@@ -38,11 +38,19 @@ export class Point {
         toArray(): Point[],
     } & AdjacentPoints;
 
-    constructor(x?: number, y?: number) {
-        if (x == null) {
+    constructor(p: Point);
+    constructor(x?: number, y?: number);
+    constructor(arg1?: number|Point, y?: number) {
+        if (arg1 == null) {
             return;
         } else {
-            this.x = x;
+            if (typeof arg1 === "number") {
+                this.x = arg1;
+            } else {
+                this.x = arg1.x;
+                this.y = arg1.y;
+                return;
+            }
         }
         if (y == null) {
             return;

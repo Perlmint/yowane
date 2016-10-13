@@ -48,7 +48,7 @@ export class Rule {
         if (this._rules.hasOwnProperty(key)) {
             return this._rules[key];
         } else {
-            throw new Error("Not defined rule!");
+            return 0;
         }
     }
 }

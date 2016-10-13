@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "typings i",
     "test": "mocha --require ts-babel-node/register test/*",
     "lint": "tslint"
   },

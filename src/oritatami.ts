@@ -21,7 +21,7 @@ export class Rule {
         }
     }
 
-    _rules: {[key:string]:number};
+    _rules: {[key: string]: number};
 
     constructor() {
         this._rules = {};
@@ -75,7 +75,7 @@ export class Oritatami {
                 return;
             }
             ret += this.rule.get(curVal, value);
-        }
+        };
         acc(adjacents.u);
         acc(adjacents.lu);
         acc(adjacents.l);
@@ -93,10 +93,10 @@ export class Oritatami {
         let point: Point = new Point(0, 0);
         temporalGrid.put(point, "");
 
-        let generator = (way: number[], level : number) => {
+        let generator = (way: number[], level: number) => {
             let idx = 0;
             let clonedWay = way.slice(0, way.length);
-            for(let dir of Point.directions.toArray()) {
+            for (let dir of Point.directions.toArray()) {
                 point.add(dir);
                 if (temporalGrid.put(point, "")) {
                     clonedWay.push(idx);

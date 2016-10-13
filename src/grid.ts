@@ -28,7 +28,7 @@ export class Point {
     y: number;
 
     static directions: {
-        toArray(): Point[],
+        toArray(): Point[];
     } & AdjacentPoints;
 
     constructor(p: Point);

@@ -94,7 +94,7 @@ export class Oritatami {
         temporalGrid.put(point, "");
 
         let generator = (way: number[], level : number) => {
-            let idx = 1;
+            let idx = 0;
             let clonedWay = way.slice(0, way.length);
             for(let dir of Point.directions.toArray()) {
                 point.add(dir);

@@ -1,11 +1,4 @@
 /*
-Direction  
-  2      u
-1   3  lu ru 
-  0      c
-6   4  ld rd
-  5      d
-
 Coordinate System
    Y axis
        /
@@ -13,11 +6,11 @@ Coordinate System
      /
 ____/______ X axis
 
-Delta from 0
+Delta from center
 
-   lu(-1, 1) (0, 1)u
-l(-1, 0) (0, 0) r(1, 0)
-   d(0, -1) rd(1, -1)
+   1 - lu(-1, 1) (0, 1)u - 2
+0 - l(-1, 0) (0, 0) (1, 0)r - 3
+    5 - d(0, -1) (1, -1)rd - 4
 */
 
 interface AdjacentPoints {

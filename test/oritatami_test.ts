@@ -5,9 +5,9 @@ import { Grid, Point } from "../src/grid";
 describe("Oritatami", () => {
     it("ways", () => {
         let oritatami = new Oritatami(1, null);
-        assert.equal(oritatami._ways.length, 6);
+        assert.equal(oritatami._paths.length, 6);
         const ways1 = [[0], [1], [2], [3], [4], [5]];
-        assert.deepEqual(oritatami._ways, ways1);
+        assert.deepEqual(oritatami._paths, ways1);
     });
 
     it("example1-deterministic", () => {

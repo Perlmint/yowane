@@ -72,13 +72,14 @@ interface Iterator<T> {
 
 export class Oritatami {
     delay: number;
-    _ways: (number[])[];
+    _paths: (number[])[];
     rule: Rule;
+    static _pathSet: {[key:number]:(number[])[]} = {};
 
     constructor(delay: number, rule: Rule) {
         this.delay = delay;
         this.rule = rule;
-        this.generatePossibleWays();
+        this.setPaths();
     }
 
     push(grid: Grid, beginPoint: Point, sequence: string): Iterator<Point> {
@@ -94,7 +95,7 @@ export class Oritatami {
                 // try all possible ways
                 let mostStablePath: (number[])[] = [];
                 let mostStablePower: number = 0;
-                for (let path of this._ways) {
+                for (let path of this._paths) {
                     let pointOnPath = new Point(point);
                     let seqIndex = 0;
                     let power = 0;
@@ -181,32 +182,41 @@ export class Oritatami {
         return ret;
     }
 
-    generatePossibleWays() {
-        this._ways = [];
+    setPaths() {
+        if (Oritatami._pathSet[this.delay] == null) {
+            Oritatami.generatePossiblePaths(this.delay);
+        }
+        this._paths = Oritatami._pathSet[this.delay];
+    }
+
+    static generatePossiblePaths(delay: number) {
+        let paths = [];
 
         let temporalGrid: Grid = new Grid();
         let point: Point = new Point(0, 0);
         temporalGrid.put(point, "");
 
-        let generator = (way: number[], level: number) => {
+        let generator = (path: number[], level: number) => {
             let idx = 0;
-            let clonedWay = way.slice(0, way.length);
+            let clonedPath = path.slice(0, path.length);
             for (let dir of Point.directions.toArray()) {
                 point.add(dir);
                 if (temporalGrid.put(point, "")) {
-                    clonedWay.push(idx);
+                    clonedPath.push(idx);
                     if (level > 1) {
-                        generator(clonedWay, level - 1);
+                        generator(clonedPath, level - 1);
                     } else {
-                        this._ways.push(clonedWay.slice(0, clonedWay.length));
+                        paths.push(clonedPath.slice(0, clonedPath.length));
                     }
-                    clonedWay.pop();
+                    clonedPath.pop();
                     temporalGrid.remove(point);
                 }
                 idx++;
                 point.sub(dir);
             }
         };
-        generator([], this.delay);
+        generator([], delay);
+        Oritatami._pathSet[delay] = paths;
+        return paths;
     }
 }

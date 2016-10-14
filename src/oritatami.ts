@@ -71,12 +71,12 @@ interface Iterator<T> {
 }
 
 export class Oritatami {
-    free: number;
+    delay: number;
     _ways: (number[])[];
     rule: Rule;
 
-    constructor(free: number, rule: Rule) {
-        this.free = free;
+    constructor(delay: number, rule: Rule) {
+        this.delay = delay;
         this.rule = rule;
         this.generatePossibleWays();
     }
@@ -84,13 +84,13 @@ export class Oritatami {
     push(grid: Grid, beginPoint: Point, sequence: string): Iterator<Point> {
         const length = sequence.length;
         // prepare empty tail
-        sequence.concat(" ".repeat(this.free - 1));
+        sequence.concat(" ".repeat(this.delay - 1));
         let point = new Point(beginPoint);
         let i = 0;
 
         const predict = (): Point[]|null => {
             if (i < length) {
-                const partialSeq = sequence.substr(i, this.free);
+                const partialSeq = sequence.substr(i, this.delay);
                 // try all possible ways
                 let mostStablePath: (number[])[] = [];
                 let mostStablePower: number = 0;
@@ -113,7 +113,7 @@ export class Oritatami {
                         grid.remove(point);
                     }
                     // path is invalid!
-                    if (seqIndex !== this.free) {
+                    if (seqIndex !== this.delay) {
                         continue;
                     } else {
                         if (mostStablePower < power) {
@@ -207,6 +207,6 @@ export class Oritatami {
                 point.sub(dir);
             }
         };
-        generator([], this.free);
+        generator([], this.delay);
     }
 }

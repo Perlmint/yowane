@@ -103,11 +103,22 @@ export class AdjacentGrid {
     d: string;
 };
 
+export type Seeds = ([number, number, string])[];
+
 export class Grid {
     _data: { [key: string]: string };
 
-    constructor() {
+    constructor();
+    constructor(seeds: Seeds);
+    constructor(seeds?: Seeds) {
         this._data = {};
+        if (seeds != null) {
+            for (let seed of seeds) {
+                if (!this.put(new Point(seed[0], seed[1]), seed[2])) {
+                    throw new Error("Duplicated seed exists!");
+                }
+            }
+        }
     }
 
     static toKey(point: Point): string {

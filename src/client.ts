@@ -1,6 +1,9 @@
 /// <reference path="../typings/index.d.ts" />
 import { Oritatami, Rule } from "./oritatami";
 import { Grid, Point } from "./grid";
+import "d3";
+import * as Raphael from "raphael";
+import * as $ from "jquery";
 
 $(document).ready(() => {
     // Data

@@ -1,5 +1,5 @@
 // @flow
-import { Grid, Point } from "./grid";
+import { Grid, Point, Seeds } from "./grid";
 
 export type RuleConfig = [string, string][];
 /**
@@ -68,6 +68,14 @@ Rule.seperator = String.fromCharCode(12288);
 interface Iterator<T> {
     predict(): T[]|null;
     next(choice: T): boolean;
+    grid: Grid;
+}
+
+export interface OritatamiConfig {
+    delay: number,
+    rule: RuleConfig,
+    seed: Seeds,
+    sequence: string
 }
 
 export class Oritatami {
@@ -75,6 +83,13 @@ export class Oritatami {
     _paths: (number[])[];
     rule: Rule;
     static _pathSet: {[key:number]:(number[])[]} = {};
+
+    static run(config: OritatamiConfig) {
+        const oritatami = new Oritatami(config.delay, new Rule(config.rule));
+        const grid = new Grid(config.seed);
+        const lastSeed = config.seed[config.seed.length - 1];
+        return oritatami.push(grid, new Point(lastSeed[0], lastSeed[1]), config.sequence);
+    }
 
     constructor(delay: number, rule: Rule) {
         this.delay = delay;
@@ -156,7 +171,8 @@ export class Oritatami {
                 }
                 i++;
                 return true;
-            }
+            },
+            grid
         };
     }
 

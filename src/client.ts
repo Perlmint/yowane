@@ -1,29 +1,31 @@
 /// <reference path="../typings/index.d.ts" />
-import { Oritatami, Rule } from "./oritatami";
+import { Oritatami } from "./oritatami";
 import { Grid, Point } from "./grid";
 import "d3";
 import * as Raphael from "raphael";
 import * as $ from "jquery";
 
 $(document).ready(() => {
-    // Data
-    let grid = new Grid();
+    const itr = Oritatami.run({
+        delay: 3,
+        rule: [
+            ["a", "a"],
+            ["b", "b"],
+            ["c", "c"],
+            ["d", "d"]
+        ],
+        seed: [
+            [-1, 2, "d"],
+            [0, 1, "x"],
+            [0, 0, "c"],
+            [1, 0, "a"],
+            [1, 1, "x"],
+            [0, 2, "d"]
+        ],
+        sequence: "bxacxb"
+    });
 
-    const rule = new Rule()
-        .add("a", "a")
-        .add("b", "b")
-        .add("c", "c")
-        .add("d", "d");
-
-    grid.put(new Point(-1, 2), "d");
-    grid.put(new Point(0, 1), "x");
-    grid.put(new Point(0, 0), "c");
-    grid.put(new Point(1, 0), "a");
-    grid.put(new Point(1, 1), "x");
-    grid.put(new Point(0, 2), "d");
-
-    const ori = new Oritatami(3, rule);
-    const itr = ori.push(grid, new Point(0, 2), "bxacxb");
+    const grid = itr.grid; 
     const goNext = () => {
         const predicted = itr.predict();
 

@@ -10,10 +10,10 @@ $(document).ready(() => {
     let grid = new Grid();
 
     const rule = new Rule()
-        .add("a", "a", 1)
-        .add("b", "b", 1)
-        .add("c", "c", 1)
-        .add("d", "d", 1);
+        .add("a", "a")
+        .add("b", "b")
+        .add("c", "c")
+        .add("d", "d");
 
     grid.put(new Point(-1, 2), "d");
     grid.put(new Point(0, 1), "x");

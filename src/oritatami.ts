@@ -1,6 +1,7 @@
 // @flow
 import { Grid, Point } from "./grid";
 
+export type RuleConfig = [string, string][];
 /**
  * Oritatami rule
  */
@@ -21,21 +22,30 @@ export class Rule {
         }
     }
 
+    
+
     _rules: {[key: string]: number};
 
-    constructor() {
+    constructor();
+    constructor(config: RuleConfig);
+    constructor(config?: RuleConfig) {
         this._rules = {};
+        if (config != null) {
+            for (let rule of config) {
+                this.add(rule[0], rule[1]);
+            }
+        }
     }
 
     /**
      * add new rule
      */
-    add(t1: string, t2: string, power: number): this {
+    add(t1: string, t2: string): this {
         let key = Rule.toKey(t1, t2);
         if (this._rules.hasOwnProperty(key)) {
             throw new Error("Wrong Rule definition! duplicated rule");
         } else {
-            this._rules[key] = power;
+            this._rules[key] = 1;
             return this;
         }
     }

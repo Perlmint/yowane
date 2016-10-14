@@ -20,10 +20,10 @@ describe("Oritatami", () => {
         grid.put(new Point(0, 2), "d");
 
         const rule = new Rule()
-            .add("a", "a", 1)
-            .add("b", "b", 1)
-            .add("c", "c", 1)
-            .add("d", "d", 1);
+            .add("a", "a")
+            .add("b", "b")
+            .add("c", "c")
+            .add("d", "d");
 
         const oritatami = new Oritatami(3, rule);
         const itr = oritatami.push(grid, new Point(0, 2), "bxacxb");
@@ -56,11 +56,11 @@ describe("Oritatami", () => {
         grid.put(new Point(1, 3), "x");
 
         const rule = new Rule()
-            .add("a", "f", 1)
-            .add("c", "e", 1)
-            .add("c", "d", 1)
-            .add("a", "d", 1)
-            .add("c", "f", 1);
+            .add("a", "f")
+            .add("c", "e")
+            .add("c", "d")
+            .add("a", "d")
+            .add("c", "f");
 
         const oritatami = new Oritatami(3, rule);
         let itr = oritatami.push(grid, new Point(0, 1), "abc");

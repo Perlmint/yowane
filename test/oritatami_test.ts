@@ -2,6 +2,51 @@ import { expect, assert } from "chai";
 import { Oritatami, Rule } from "../src/oritatami";
 import { Grid, Point } from "../src/grid";
 
+describe("Rule", () => {
+    it("basic", () => {
+        const rule1 = new Rule()
+            .add("a", "a")
+            .add("b", "b")
+            .add("c", "c")
+            .add("d", "d");
+
+        assert.equal(rule1.get("a", "a"), 1);
+        assert.equal(rule1.get("a", "b"), 0);
+        assert.equal(rule1.get("c", "c"), 1);
+        assert.equal(rule1.get("x", "x"), 0);
+    });
+
+    it("reversible", () => {
+        const rule = new Rule()
+            .add("a", "f")
+            .add("c", "e")
+            .add("c", "d")
+            .add("a", "d")
+            .add("c", "f");
+
+        assert.equal(rule.get("a", "f"), 1);
+        assert.equal(rule.get("f", "a"), 1);
+        assert.equal(rule.get("e", "d"), 0);
+        assert.equal(rule.get("c", "e"), 1);
+        assert.equal(rule.get("e", "c"), 1);
+    });
+
+    it("config", () => {
+        const rule1 = new Rule()
+            .add("a", "a")
+            .add("b", "b")
+            .add("c", "c")
+            .add("d", "d");
+
+        const rule2 = new Rule([
+            ["a", "a"],
+            ["b", "b"],
+            ["c", "c"],
+            ["d", "d"]]);
+        assert.deepEqual(rule1, rule2);
+    });
+});
+
 describe("Oritatami", () => {
     it("ways", () => {
         let oritatami = new Oritatami(1, null);

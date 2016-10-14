@@ -55,6 +55,42 @@ describe("Oritatami", () => {
         assert.deepEqual(oritatami._paths, ways1);
     });
 
+    it("runWithConfig", () => {
+        const itr = Oritatami.run({
+            delay: 3,
+            rule: [
+                ["a", "a"],
+                ["b", "b"],
+                ["c", "c"],
+                ["d", "d"]
+            ],
+            seed: [
+                [-1, 2, "d"],
+                [0, 1, "x"],
+                [0, 0, "c"],
+                [1, 0, "a"],
+                [1, 1, "x"],
+                [0, 2, "d"]
+            ],
+            sequence: "bxacxb"
+        });
+        const grid = itr.grid;
+        do {
+            const predicted = itr.predict();
+            if (predicted == null) {
+                break;
+            }
+            itr.next(predicted[0]);
+        } while (true);
+
+        assert.equal(grid.get(new Point(1, 2)), "b");
+        assert.equal(grid.get(new Point(2, 1)), "x");
+        assert.equal(grid.get(new Point(2, 0)), "a");
+        assert.equal(grid.get(new Point(3, 0)), "c");
+        assert.equal(grid.get(new Point(3, 1)), "x");
+        assert.equal(grid.get(new Point(2, 2)), "b");
+    });
+
     it("example1-deterministic", () => {
         const grid = new Grid();
         grid.put(new Point(-1, 2), "d");

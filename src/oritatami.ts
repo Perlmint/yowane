@@ -102,9 +102,9 @@ export class Oritatami {
         let seq: string[];
         if (typeof sequence === "string") {
             // prepare empty tail
-            sequence.concat(" :".repeat(this.delay - 1));
             seq = sequence.split(":");
-            length = seq.length - this.delay + 1;
+            length = seq.length;
+            seq.concat(new Array(this.delay - 1));
         } else {
             seq = sequence;
             seq.concat(new Array(this.delay - 1));

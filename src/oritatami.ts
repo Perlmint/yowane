@@ -97,11 +97,18 @@ export class Oritatami {
         this.setPaths();
     }
 
-    push(grid: Grid, beginPoint: Point, sequence: string): Iterator<Point> {
-        const length = sequence.length;
-        // prepare empty tail
-        sequence.concat(" :".repeat(this.delay - 1));
-        const seq = sequence.split(":");
+    push(grid: Grid, beginPoint: Point, sequence: string|string[]): Iterator<Point> {
+        let length = sequence.length;
+        let seq: string[];
+        if (typeof sequence === "string") {
+            // prepare empty tail
+            sequence.concat(" :".repeat(this.delay - 1));
+            seq = sequence.split(":");
+            length = seq.length - this.delay + 1;
+        } else {
+            seq = sequence;
+            seq.concat(new Array(this.delay - 1));
+        }
         let point = new Point(beginPoint);
         let i = 0;
 

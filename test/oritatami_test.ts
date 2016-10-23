@@ -72,7 +72,7 @@ describe("Oritatami", () => {
                 [1, 1, "x"],
                 [0, 2, "d"]
             ],
-            sequence: "bxacxb"
+            sequence: "b:x:a:c:x:b"
         });
         const grid = itr.grid;
         do {
@@ -107,7 +107,7 @@ describe("Oritatami", () => {
             .add("d", "d");
 
         const oritatami = new Oritatami(3, rule);
-        const itr = oritatami.push(grid, new Point(0, 2), "bxacxb");
+        const itr = oritatami.push(grid, new Point(0, 2), "b:x:a:c:x:b");
         const goNext = () => {
             const predicted = itr.predict();
             assert.equal(predicted.length, 1, `expected length - 1 but ${predicted}`);
@@ -144,7 +144,7 @@ describe("Oritatami", () => {
             .add("c", "f");
 
         const oritatami = new Oritatami(3, rule);
-        let itr = oritatami.push(grid, new Point(0, 1), "abc");
+        let itr = oritatami.push(grid, new Point(0, 1), "a:b:c");
         let predicted = itr.predict();
         assert.equal(predicted.length, 2);
         assert.include(predicted, new Point(1, 0));
@@ -170,7 +170,7 @@ describe("Oritatami", () => {
         grid.remove(new Point(0, 2));
 
         // path2
-        itr = oritatami.push(grid, new Point(0, 2), "abc");
+        itr = oritatami.push(grid, new Point(0, 2), "a:b:c");
         itr.predict();
         itr.next(new Point(0, 2));
         predicted = itr.predict();

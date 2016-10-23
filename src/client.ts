@@ -22,7 +22,7 @@ $(document).ready(() => {
             [1, 1, "x"],
             [0, 2, "d"]
         ],
-        sequence: "bxacxb"
+        sequence: "b:x:a:c:x:b"
     });
 
     const grid = itr.grid; 

@@ -100,13 +100,14 @@ export class Oritatami {
     push(grid: Grid, beginPoint: Point, sequence: string): Iterator<Point> {
         const length = sequence.length;
         // prepare empty tail
-        sequence.concat(" ".repeat(this.delay - 1));
+        sequence.concat(" :".repeat(this.delay - 1));
+        const seq = sequence.split(":");
         let point = new Point(beginPoint);
         let i = 0;
 
         const predict = (): Point[]|null => {
             if (i < length) {
-                const partialSeq = sequence.substr(i, this.delay);
+                const partialSeq = seq.slice(i, i + this.delay);
                 // try all possible ways
                 let mostStablePath: (number[])[] = [];
                 let mostStablePower: number = 0;
@@ -166,7 +167,7 @@ export class Oritatami {
                     return false;
                 }
                 point = p;
-                if (!grid.put(point, sequence[i])) {
+                if (!grid.put(point, seq[i])) {
                     return false;
                 }
                 i++;

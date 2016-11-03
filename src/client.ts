@@ -1,31 +1,14 @@
 /// <reference path="../typings/index.d.ts" />
-import { Oritatami } from "./oritatami";
-import { Grid, Point } from "./grid";
+import {Oritatami, OritatamiConfig} from "./oritatami";
+import {Grid, Point} from "./grid";
 import "d3";
 import * as Raphael from "raphael";
 import * as $ from "jquery";
 
-$(document).ready(() => {
-    const itr = Oritatami.run({
-        delay: 3,
-        rule: [
-            ["a", "a"],
-            ["b", "b"],
-            ["c", "c"],
-            ["d", "d"]
-        ],
-        seed: [
-            [-1, 2, "d"],
-            [0, 1, "x"],
-            [0, 0, "c"],
-            [1, 0, "a"],
-            [1, 1, "x"],
-            [0, 2, "d"]
-        ],
-        sequence: "b:x:a:c:x:b"
-    });
+const drawOritatami = (config: OritatamiConfig) => {
+    const itr = Oritatami.run(config);
 
-    const grid = itr.grid; 
+    const grid = itr.grid;
     const goNext = () => {
         const predicted = itr.predict();
 
@@ -47,9 +30,9 @@ $(document).ready(() => {
     while (goNext() === false);
 
     // View
-    const initialCount = 6;
+    const nodeCount = config.sequence.length;
 
-    let paper = Raphael(0, 0, 500, 500);
+    let paper = Raphael("paper", 500, 500);
 
     let allPoints = grid.getAll();
     let circleList: [number, number, string][] = [];
@@ -84,11 +67,11 @@ $(document).ready(() => {
 
     let lastCircle: [number, number, string] = null;
 
-    if (initialCount <= circleList.length) {
-        let initialCircleLsit = circleList.splice(0, initialCount);
-        let initialPathList = pathStrList.splice(0, initialCount - 1);
+    if (nodeCount <= circleList.length) {
+        let initialCircleLsit = circleList.splice(0, nodeCount);
+        let initialPathList = pathStrList.splice(0, nodeCount - 1);
 
-        lastCircle = initialCircleLsit[initialCount - 1];
+        lastCircle = initialCircleLsit[nodeCount - 1];
 
         initialPathList.forEach(path => {
             drawPath(paper, path);
@@ -148,7 +131,7 @@ $(document).ready(() => {
         drawFuncList[drawIndex]();
         ++drawIndex;
     }, 300);
-});
+};
 
 function drawCircle(paper: RaphaelPaper, x: number, y: number, text: string) {
     paper.circle(x, y, 10).attr("fill", "#FFFFFF");
@@ -166,7 +149,27 @@ function getScreenCoord(x: number, y): [number, number] {
     let retX = 100 * (1 + tempX);
     let retY = 100 * (1 + tempY);
 
-    let ret: [number, number] = [retX, retY];
-
-    return ret;
+    return [retX, retY];
 }
+
+$(document).ready(() => {
+    // initialize with example data
+    drawOritatami({
+        delay: 3,
+        rule: [
+            ["a", "a"],
+            ["b", "b"],
+            ["c", "c"],
+            ["d", "d"]
+        ],
+        seed: [
+            [-1, 2, "d"],
+            [0, 1, "x"],
+            [0, 0, "c"],
+            [1, 0, "a"],
+            [1, 1, "x"],
+            [0, 2, "d"]
+        ],
+        sequence: "bxacxb".split("")
+    });
+});

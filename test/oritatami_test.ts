@@ -49,7 +49,7 @@ describe("Rule", () => {
 
 describe("Oritatami", () => {
     it("ways", () => {
-        let oritatami = new Oritatami(1, null);
+        let oritatami = new Oritatami(1, null, null);
         assert.equal(oritatami._paths.length, 6);
         const ways1 = [[0], [1], [2], [3], [4], [5]];
         assert.deepEqual(oritatami._paths, ways1);
@@ -72,7 +72,7 @@ describe("Oritatami", () => {
                 [1, 1, "x"],
                 [0, 2, "d"]
             ],
-            sequence: "b:x:a:c:x:b"
+            sequence: "bxacxb".split("")
         });
         const grid = itr.grid;
         do {
@@ -106,8 +106,8 @@ describe("Oritatami", () => {
             .add("c", "c")
             .add("d", "d");
 
-        const oritatami = new Oritatami(3, rule);
-        const itr = oritatami.push(grid, new Point(0, 2), "b:x:a:c:x:b");
+        const oritatami = new Oritatami(3, rule, null);
+        const itr = oritatami.push(grid, new Point(0, 2), "bxacxb".split(""));
         const goNext = () => {
             const predicted = itr.predict();
             assert.equal(predicted.length, 1, `expected length - 1 but ${predicted}`);
@@ -143,8 +143,8 @@ describe("Oritatami", () => {
             .add("a", "d")
             .add("c", "f");
 
-        const oritatami = new Oritatami(3, rule);
-        let itr = oritatami.push(grid, new Point(0, 1), "a:b:c");
+        const oritatami = new Oritatami(3, rule, null);
+        let itr = oritatami.push(grid, new Point(0, 1), "abc".split(""));
         let predicted = itr.predict();
         assert.equal(predicted.length, 2);
         assert.include(predicted, new Point(1, 0));
@@ -170,7 +170,7 @@ describe("Oritatami", () => {
         grid.remove(new Point(0, 2));
 
         // path2
-        itr = oritatami.push(grid, new Point(0, 2), "a:b:c");
+        itr = oritatami.push(grid, new Point(0, 2), "abc".split(""));
         itr.predict();
         itr.next(new Point(0, 2));
         predicted = itr.predict();

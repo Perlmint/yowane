@@ -75,46 +75,38 @@ export interface OritatamiConfig {
     delay: number,
     rule: RuleConfig,
     seed: Seeds,
-    sequence: string
+    sequence: string[]
 }
 
 export class Oritatami {
     delay: number;
+    sequence: string[];
     _paths: (number[])[];
     rule: Rule;
     static _pathSet: {[key:number]:(number[])[]} = {};
 
     static run(config: OritatamiConfig) {
-        const oritatami = new Oritatami(config.delay, new Rule(config.rule));
+        const oritatami = new Oritatami(config.delay, new Rule(config.rule), config.sequence);
         const grid = new Grid(config.seed);
         const lastSeed = config.seed[config.seed.length - 1];
         return oritatami.push(grid, new Point(lastSeed[0], lastSeed[1]), config.sequence);
     }
 
-    constructor(delay: number, rule: Rule) {
+    constructor(delay: number, rule: Rule, sequence: string[]) {
         this.delay = delay;
         this.rule = rule;
+        this.sequence = sequence;
         this.setPaths();
     }
 
-    push(grid: Grid, beginPoint: Point, sequence: string|string[]): Iterator<Point> {
+    push(grid: Grid, beginPoint: Point, sequence: string[]): Iterator<Point> {
         let length = sequence.length;
-        let seq: string[];
-        if (typeof sequence === "string") {
-            // prepare empty tail
-            seq = sequence.split(":");
-            length = seq.length;
-            seq.concat(new Array(this.delay - 1));
-        } else {
-            seq = sequence;
-            seq.concat(new Array(this.delay - 1));
-        }
         let point = new Point(beginPoint);
         let i = 0;
 
         const predict = (): Point[]|null => {
             if (i < length) {
-                const partialSeq = seq.slice(i, i + this.delay);
+                const partialSeq = sequence.slice(i, i + this.delay);
                 // try all possible ways
                 let mostStablePath: (number[])[] = [];
                 let mostStablePower: number = 0;
@@ -137,9 +129,7 @@ export class Oritatami {
                         grid.remove(point);
                     }
                     // path is invalid!
-                    if (seqIndex !== this.delay) {
-                        continue;
-                    } else {
+                    if (seqIndex === this.delay) {
                         if (mostStablePower < power) {
                             mostStablePower = power;
                             mostStablePath = [path];
@@ -174,7 +164,7 @@ export class Oritatami {
                     return false;
                 }
                 point = p;
-                if (!grid.put(point, seq[i])) {
+                if (!grid.put(point, sequence[i])) {
                     return false;
                 }
                 i++;

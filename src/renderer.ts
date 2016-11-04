@@ -5,6 +5,14 @@ import "d3";
 import * as Raphael from "raphael";
 import * as $ from "jquery";
 
+const NODE_ANIMATION_MS = 500;
+const PATH_ANIMATION_MS = 300;
+
+class AnimationContext {
+    ms: number;
+    easing: string;
+}
+
 class RenderIterator {
     _renderer: Renderer;
     _iterator: OritatamiIterator;
@@ -26,7 +34,13 @@ class RenderIterator {
         }
         if (choice) {
             this._iterator.next(choice);
-            this._renderer.drawNode(choice);
+            this._renderer.drawNode(choice, {
+                ms: NODE_ANIMATION_MS,
+                easing: "elastic"
+            }, {
+                ms: PATH_ANIMATION_MS,
+                easing: "easeOut"
+            });
         }
         this._candidates = this._iterator.predict();
         return this._candidates;
@@ -72,7 +86,7 @@ export class Renderer {
         autoButton.click(() => {
             setInterval(() => {
                 this._iterator.next();
-            }, 300);
+            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
         wrapper.append(autoButton);
         if (config) {
@@ -104,9 +118,9 @@ export class Renderer {
         }
     }
 
-    drawNode(point: Point) {
+    drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {
         const near = this._grid.getNear(point);
-        this.drawCircle(point, near.c);
+        this.drawCircle(point, near.c, nodeAnimation);
         const weakConnected: Point[] = [];
         for (const info of Point.directions.nearToArray(near)) {
             const rel = this._oritatami.rule.get(info[1], near.c);
@@ -119,26 +133,41 @@ export class Renderer {
         }
 
         for (const connected of weakConnected) {
-            this.drawConnection(connected, point, ConnectionType.weak);
+            this.drawConnection(connected, point, ConnectionType.weak, pathAnimation);
         }
         if (this._last_point) {
-            this.drawConnection(this._last_point, point, ConnectionType.strong);
+            this.drawConnection(this._last_point, point, ConnectionType.strong, pathAnimation);
         }
         this._last_point = new Point(point);
     }
 
-    drawCircle(p: Point, text: string) {
+    drawCircle(p: Point, text: string, animation?: AnimationContext) {
         const [x, y] = this._getScreenCoord(p);
-        this.paper.circle(x, y, this._circle_size).attr("fill", "#FFFFFF");
-        this.paper.text(x, y, text).attr("font-size", 15);
+        if (animation) {
+            this.paper.circle(x, y, 0).attr("fill", "#FFFFFF").animate({r: this._circle_size}, animation.ms, animation.easing);
+            this.paper.text(x, y, text).attr({
+                "font-size": 15,
+                opacity: 0
+            }).animate({opacity: 1}, animation.ms, animation.easing);
+        } else {
+            this.paper.circle(x, y, this._circle_size).attr("fill", "#FFFFFF");
+            this.paper.text(x, y, text).attr("font-size", 15);
+        }
     }
 
-    drawConnection(p1: Point, p2: Point, type: ConnectionType) {
+    drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext) {
         const screenCoord = [this._getScreenCoord(p1), this._getScreenCoord(p2)];
-        let pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
-        this._drawPath(pathStr)
-            .attr("stroke-dasharray", type === ConnectionType.strong ? "" : "- ")
-            .toBack();
+        const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
+        if (animation) {
+            this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
+                .attr("stroke-dasharray", type === ConnectionType.strong ? "" : "- ")
+                .toBack()
+                .animate({path: pathStr}, animation.ms, animation.easing);
+        } else {
+            this._drawPath(pathStr)
+                .attr("stroke-dasharray", type === ConnectionType.strong ? "" : "- ")
+                .toBack();
+        }
     }
 
     _drawPath(path: string) {

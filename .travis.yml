@@ -17,7 +17,7 @@ script:
   - git config push.default simple
   - git remote add deploy git@github.com:Perlmint/yowane.git
   - git fetch deploy
-  - git checkout -b master deploy/gh-pages  || git checkout --orphan gh-pages
+  - git checkout -b gh-pages deploy/gh-pages  || git checkout --orphan gh-pages
   - git reset
   - find . -maxdepth 1 ! -name "out" ! -name .git ! -path . -exec git rm --ignore-unmatch -q -r -f {} \; -exec rm -rf {} \;
   - mv out/* .

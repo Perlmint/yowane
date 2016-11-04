@@ -6,7 +6,7 @@ import * as $ from "jquery";
 $(document).ready(() => {
     let renderer: Renderer;
     $("#oritatami-submit").click(() => {
-        const configStr = $("#oritatami-input").text();
+        const configStr = $("#oritatami-input").val();
         const config = JSON.parse(configStr) as OritatamiConfig;
         renderer = new Renderer(500, 500, 100, new Theme({
             a: "red",

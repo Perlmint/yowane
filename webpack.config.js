@@ -1,9 +1,12 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require("path");
+
 module.exports = {
   entry: [
     "./src/client.ts"
   ],
   output: {
-      path: require("path").resolve("./out/asset"),
+      path: path.resolve("./out"),
       publicPath: "/static",
       filename: "client.js"
   },
@@ -14,5 +17,17 @@ module.exports = {
     loaders: [
         { test: /\.tsx?$/, exclude: /^\.#/, loader: 'ts' }
     ]
-  }
-}
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: "public/index.html",
+        to: "index.html"
+      },
+      {
+        from: "public/credit.html",
+        to: "credit.html"
+      }
+    ])
+  ]
+};

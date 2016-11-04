@@ -51,6 +51,72 @@ class RenderIterator {
     }
 }
 
+export class Color {
+    code: string;
+    r: number;
+    g: number;
+    b: number;
+
+    constructor(color: Color);
+    constructor(codeOrName: string);
+    constructor(r: number, g: number, b: number);
+    constructor(a1: string | number | Color, a2?: number, a3?: number) {
+        if (typeof a1 === "string") {
+            this.code = a1;
+        } else if (typeof a1 === "number") {
+            this.r = a1;
+            this.g = a2;
+            this.b = a3;
+        } else {
+            this.code = a1.code;
+            this.r = a1.r;
+            this.g = a1.g;
+            this.b = a1.b;
+        }
+    }
+
+    toString(): string {
+        if (this.code) {
+            return this.code;
+        } else {
+            return `rgb(${this.r},${this.g},${this.b})`;
+        }
+    }
+}
+
+export class Theme {
+    _data: {[key: string]: Color};
+
+    constructor(config?: {[key: string]: string}) {
+        this._data = {};
+        if (config) {
+            Object.keys(config).forEach(key => {
+                this.setColor(key, new Color(config[key]));
+            });
+        }
+    }
+
+    setColor(type: string|string[], color: Color) {
+        color = new Color(color);
+        if (typeof type === "string") {
+            this._data[type] = color;
+        } else {
+            type.forEach(t => {
+                this._data[t] = color;
+            });
+        }
+        return this;
+    }
+
+    get(type: string) {
+        if (this._data[type] !== undefined) {
+            return this._data[type].toString();
+        } else {
+            return "black";
+        }
+    }
+}
+
 export class Renderer {
     paper: RaphaelPaper;
     _width: number;
@@ -61,19 +127,25 @@ export class Renderer {
     _last_point: Point;
     _oritatami: Oritatami;
     _rule: Rule;
+    _theme: Theme;
     _iterator: RenderIterator;
 
     get iterator(): RenderIterator {
         return this._iterator;
     }
 
-    constructor(width: number, height: number, grid_size?: number, config?: OritatamiConfig) {
+    get theme(): Theme {
+        return this._theme;
+    }
+
+    constructor(width: number, height: number, grid_size?: number, theme?: Theme, config?: OritatamiConfig) {
         this.paper = Raphael("paper", width, height);
         this._grid_size = grid_size ? grid_size : 100;
         this._circle_size = 10;
         this._grid = new Grid();
         this._width = width;
         this._height = height;
+        this._theme = theme ? theme : new Theme();
         let wrapper = $("#paper").empty();
         wrapper.append(this.paper.canvas);
         const buttonDiv = $("<div class=\"buttons\"></div>");
@@ -145,7 +217,8 @@ export class Renderer {
     drawCircle(p: Point, text: string, animation?: AnimationContext) {
         const [x, y] = this._getScreenCoord(p);
         const attr = {
-            fill: "#FFFFFF", // TODO : color
+            fill: "white",
+            "stroke": this._theme.get(text),
             "stroke-width": 3,
         };
         if (animation) {

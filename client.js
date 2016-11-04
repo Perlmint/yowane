@@ -60,7 +60,7 @@
 	    $("#oritatami-submit").click(() => {
 	        const configStr = $("#oritatami-input").text();
 	        const config = JSON.parse(configStr);
-	        renderer = new renderer_1.Renderer($("#paper")[0], 500, 500, 100, config);
+	        renderer = new renderer_1.Renderer(500, 500, 100, config);
 	        return false;
 	    });
 	});
@@ -77,6 +77,10 @@
 	__webpack_require__(5);
 	const Raphael = __webpack_require__(6);
 	const $ = __webpack_require__(7);
+	const NODE_ANIMATION_MS = 500;
+	const PATH_ANIMATION_MS = 300;
+	class AnimationContext {
+	}
 	class RenderIterator {
 	    constructor(renderer, iterator) {
 	        this._renderer = renderer;
@@ -94,7 +98,13 @@
 	        }
 	        if (choice) {
 	            this._iterator.next(choice);
-	            this._renderer.drawNode(choice);
+	            this._renderer.drawNode(choice, {
+	                ms: NODE_ANIMATION_MS,
+	                easing: "elastic"
+	            }, {
+	                ms: PATH_ANIMATION_MS,
+	                easing: "easeOut"
+	            });
 	        }
 	        this._candidates = this._iterator.predict();
 	        return this._candidates;
@@ -104,28 +114,29 @@
 	    }
 	}
 	class Renderer {
-	    constructor(container, width, height, grid_size, config) {
-	        this.paper = Raphael(container, width, height);
+	    constructor(width, height, grid_size, config) {
+	        this.paper = Raphael("paper", width, height);
 	        this._grid_size = grid_size ? grid_size : 100;
 	        this._circle_size = 10;
 	        this._grid = new grid_1.Grid();
 	        this._width = width;
 	        this._height = height;
-	        const wrapper = $("<div></div>");
-	        this.paper.canvas.parentElement.replaceChild(wrapper[0], this.paper.canvas);
+	        let wrapper = $("#paper").empty();
 	        wrapper.append(this.paper.canvas);
-	        const nextButton = $("<button>next</button>");
+	        const buttonDiv = $("<div class=\"buttons\"></div>");
+	        wrapper.append(buttonDiv);
+	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
 	        nextButton.click(() => {
 	            this._iterator.next();
 	        });
-	        wrapper.append(nextButton);
-	        const autoButton = $("<button>auto</button>");
+	        buttonDiv.append(nextButton);
+	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
 	        autoButton.click(() => {
 	            setInterval(() => {
 	                this._iterator.next();
-	            }, 300);
+	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
 	        });
-	        wrapper.append(autoButton);
+	        buttonDiv.append(autoButton);
 	        if (config) {
 	            this.oritatami = config;
 	        }
@@ -154,9 +165,9 @@
 	            prevPoint = curPoint;
 	        }
 	    }
-	    drawNode(point) {
+	    drawNode(point, nodeAnimation, pathAnimation) {
 	        const near = this._grid.getNear(point);
-	        this.drawCircle(point, near.c);
+	        this.drawCircle(point, near.c, nodeAnimation);
 	        const weakConnected = [];
 	        for (const info of grid_1.Point.directions.nearToArray(near)) {
 	            const rel = this._oritatami.rule.get(info[1], near.c);
@@ -169,24 +180,45 @@
 	            }
 	        }
 	        for (const connected of weakConnected) {
-	            this.drawConnection(connected, point, grid_1.ConnectionType.weak);
+	            this.drawConnection(connected, point, grid_1.ConnectionType.weak, pathAnimation);
 	        }
 	        if (this._last_point) {
-	            this.drawConnection(this._last_point, point, grid_1.ConnectionType.strong);
+	            this.drawConnection(this._last_point, point, grid_1.ConnectionType.strong, pathAnimation);
 	        }
 	        this._last_point = new grid_1.Point(point);
 	    }
-	    drawCircle(p, text) {
+	    drawCircle(p, text, animation) {
 	        const [x, y] = this._getScreenCoord(p);
-	        this.paper.circle(x, y, this._circle_size).attr("fill", "#FFFFFF");
-	        this.paper.text(x, y, text).attr("font-size", 15);
+	        const attr = {
+	            fill: "#FFFFFF",
+	            "stroke-width": 3,
+	        };
+	        if (animation) {
+	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
+	            this.paper.text(x, y, text).attr({
+	                "font-size": 15,
+	                opacity: 0
+	            }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	        }
+	        else {
+	            this.paper.circle(x, y, this._circle_size).attr(attr);
+	            this.paper.text(x, y, text).attr("font-size", 15);
+	        }
 	    }
-	    drawConnection(p1, p2, type) {
+	    drawConnection(p1, p2, type, animation) {
 	        const screenCoord = [this._getScreenCoord(p1), this._getScreenCoord(p2)];
-	        let pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
-	        this._drawPath(pathStr)
-	            .attr("stroke-dasharray", type === grid_1.ConnectionType.strong ? "" : "- ")
-	            .toBack();
+	        const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
+	        if (animation) {
+	            this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
+	                .attr("stroke-dasharray", type === grid_1.ConnectionType.strong ? "" : "- ")
+	                .toBack()
+	                .animate({ path: pathStr }, animation.ms, animation.easing);
+	        }
+	        else {
+	            this._drawPath(pathStr)
+	                .attr("stroke-dasharray", type === grid_1.ConnectionType.strong ? "" : "- ")
+	                .toBack();
+	        }
 	    }
 	    _drawPath(path) {
 	        return this.paper.path(path);

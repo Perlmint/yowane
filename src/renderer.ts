@@ -77,18 +77,20 @@ export class Renderer {
         const wrapper = $("<div></div>");
         this.paper.canvas.parentElement.replaceChild(wrapper[0], this.paper.canvas);
         wrapper.append(this.paper.canvas);
-        const nextButton = $("<button>next</button>");
+        const buttonDiv = $("<div class=\"buttons\"></div>");
+        wrapper.append(buttonDiv);
+        const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => {
             this._iterator.next();
         });
-        wrapper.append(nextButton);
-        const autoButton = $("<button>auto</button>");
+        buttonDiv.append(nextButton);
+        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
                 this._iterator.next();
             }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
-        wrapper.append(autoButton);
+        buttonDiv.append(autoButton);
         if (config) {
             this.oritatami = config;
         }
@@ -143,14 +145,18 @@ export class Renderer {
 
     drawCircle(p: Point, text: string, animation?: AnimationContext) {
         const [x, y] = this._getScreenCoord(p);
+        const attr = {
+            fill: "#FFFFFF", // TODO : color
+            "stroke-width": 3,
+        };
         if (animation) {
-            this.paper.circle(x, y, 0).attr("fill", "#FFFFFF").animate({r: this._circle_size}, animation.ms, animation.easing);
+            this.paper.circle(x, y, 0).attr(attr).animate({r: this._circle_size}, animation.ms, animation.easing);
             this.paper.text(x, y, text).attr({
                 "font-size": 15,
                 opacity: 0
             }).animate({opacity: 1}, animation.ms, animation.easing);
         } else {
-            this.paper.circle(x, y, this._circle_size).attr("fill", "#FFFFFF");
+            this.paper.circle(x, y, this._circle_size).attr(attr);
             this.paper.text(x, y, text).attr("font-size", 15);
         }
     }

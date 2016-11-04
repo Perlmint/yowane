@@ -58,9 +58,15 @@
 	$(document).ready(() => {
 	    let renderer;
 	    $("#oritatami-submit").click(() => {
-	        const configStr = $("#oritatami-input").text();
+	        const configStr = $("#oritatami-input").val();
 	        const config = JSON.parse(configStr);
-	        renderer = new renderer_1.Renderer(500, 500, 100, config);
+	        renderer = new renderer_1.Renderer(500, 500, 100, new renderer_1.Theme({
+	            a: "red",
+	            b: "lime",
+	            c: "#1E90FF",
+	            d: "#FF1493"
+	        }));
+	        renderer.oritatami = config;
 	        return false;
 	    });
 	});
@@ -113,14 +119,73 @@
 	        return this._iterator.predict() == null;
 	    }
 	}
+	class Color {
+	    constructor(a1, a2, a3) {
+	        if (typeof a1 === "string") {
+	            this.code = a1;
+	        }
+	        else if (typeof a1 === "number") {
+	            this.r = a1;
+	            this.g = a2;
+	            this.b = a3;
+	        }
+	        else {
+	            this.code = a1.code;
+	            this.r = a1.r;
+	            this.g = a1.g;
+	            this.b = a1.b;
+	        }
+	    }
+	    toString() {
+	        if (this.code) {
+	            return this.code;
+	        }
+	        else {
+	            return `rgb(${this.r},${this.g},${this.b})`;
+	        }
+	    }
+	}
+	exports.Color = Color;
+	class Theme {
+	    constructor(config) {
+	        this._data = {};
+	        if (config) {
+	            Object.keys(config).forEach(key => {
+	                this.setColor(key, new Color(config[key]));
+	            });
+	        }
+	    }
+	    setColor(type, color) {
+	        color = new Color(color);
+	        if (typeof type === "string") {
+	            this._data[type] = color;
+	        }
+	        else {
+	            type.forEach(t => {
+	                this._data[t] = color;
+	            });
+	        }
+	        return this;
+	    }
+	    get(type) {
+	        if (this._data[type] !== undefined) {
+	            return this._data[type].toString();
+	        }
+	        else {
+	            return "black";
+	        }
+	    }
+	}
+	exports.Theme = Theme;
 	class Renderer {
-	    constructor(width, height, grid_size, config) {
+	    constructor(width, height, grid_size, theme, config) {
 	        this.paper = Raphael("paper", width, height);
 	        this._grid_size = grid_size ? grid_size : 100;
 	        this._circle_size = 10;
 	        this._grid = new grid_1.Grid();
 	        this._width = width;
 	        this._height = height;
+	        this._theme = theme ? theme : new Theme();
 	        let wrapper = $("#paper").empty();
 	        wrapper.append(this.paper.canvas);
 	        const buttonDiv = $("<div class=\"buttons\"></div>");
@@ -143,6 +208,9 @@
 	    }
 	    get iterator() {
 	        return this._iterator;
+	    }
+	    get theme() {
+	        return this._theme;
 	    }
 	    set oritatami(v) {
 	        this._rule = new oritatami_1.Rule(v.rule);
@@ -190,7 +258,8 @@
 	    drawCircle(p, text, animation) {
 	        const [x, y] = this._getScreenCoord(p);
 	        const attr = {
-	            fill: "#FFFFFF",
+	            fill: "white",
+	            "stroke": this._theme.get(text),
 	            "stroke-width": 3,
 	        };
 	        if (animation) {

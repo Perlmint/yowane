@@ -27,6 +27,14 @@ module.exports = {
       {
         from: "public/credit.html",
         to: "credit.html"
+      },
+      {
+        from: "public/about.html",
+        to: "about.html"
+      },
+      {
+        from: "public/spacefill.html",
+        to: "spacefill.html"
       }
     ])
   ]

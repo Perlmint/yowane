@@ -65,41 +65,40 @@ export class Rule {
 
 Rule.seperator = String.fromCharCode(12288);
 
-interface Iterator<T> {
-    predict(): T[]|null;
-    next(choice: T): boolean;
+export interface OritatamiIterator {
+    predict(): Point[]|null;
+    next(choice: Point): boolean;
     grid: Grid;
+    seq: string[];
 }
 
 export interface OritatamiConfig {
-    delay: number,
-    rule: RuleConfig,
-    seed: Seeds,
-    sequence: string[]
+    delay: number;
+    rule: RuleConfig;
+    seed: Seeds;
+    sequence: string[];
 }
 
 export class Oritatami {
     delay: number;
-    sequence: string[];
     _paths: (number[])[];
     rule: Rule;
     static _pathSet: {[key:number]:(number[])[]} = {};
 
     static run(config: OritatamiConfig) {
-        const oritatami = new Oritatami(config.delay, new Rule(config.rule), config.sequence);
+        const oritatami = new Oritatami(config.delay, new Rule(config.rule));
         const grid = new Grid(config.seed);
         const lastSeed = config.seed[config.seed.length - 1];
         return oritatami.push(grid, new Point(lastSeed[0], lastSeed[1]), config.sequence);
     }
 
-    constructor(delay: number, rule: Rule, sequence: string[]) {
+    constructor(delay: number, rule: Rule) {
         this.delay = delay;
         this.rule = rule;
-        this.sequence = sequence;
         this.setPaths();
     }
 
-    push(grid: Grid, beginPoint: Point, sequence: string[]): Iterator<Point> {
+    push(grid: Grid, beginPoint: Point, sequence: string[]): OritatamiIterator {
         let length = sequence.length;
         let point = new Point(beginPoint);
         let i = 0;
@@ -170,7 +169,8 @@ export class Oritatami {
                 i++;
                 return true;
             },
-            grid
+            grid,
+            seq: sequence
         };
     }
 

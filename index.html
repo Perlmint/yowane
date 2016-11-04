@@ -46,16 +46,16 @@
                 <div id="paper" class="col-xs-12"></div>
                 <div id="input-box" class="col-sm-6 col-xs-12">
                     <div class="form-group">
-                        <label for="input">Oritatami Input</label>
-                        <textarea id="input" class="form-control" rows="20">{
-    delay: 3,
-    rule: [
+                        <label for="oritatami-input">Oritatami Input</label>
+                        <textarea id="oritatami-input" class="form-control" rows="20">{
+    "delay": 3,
+    "rule": [
         ["a", "a"],
         ["b", "b"],
         ["c", "c"],
         ["d", "d"]
     ],
-    seed: [
+    "seed": [
         [-1, 2, "d"],
         [0, 1, "x"],
         [0, 0, "c"],
@@ -63,10 +63,10 @@
         [1, 1, "x"],
         [0, 2, "d"]
     ],
-    sequence: "bxacxb"
+    "sequence": "bxacxb"
 }</textarea>
                     </div>
-                    <button type="submit" class="btn btn-default">Run</button>
+                    <button type="submit" id="oritatami-submit" class="btn btn-default">Run</button>
                     <!-- TODO run oritatami on run button click -->
                 </div>
             </div>

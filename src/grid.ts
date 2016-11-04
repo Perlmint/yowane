@@ -29,6 +29,7 @@ export class Point {
 
     static directions: {
         toArray(): Point[];
+        nearToArray(adj: AdjacentGrid): [Point, string][];
     } & AdjacentPoints;
 
     constructor(p: Point);
@@ -84,6 +85,10 @@ const directions = [
 
 Point.directions = {
     toArray: () => directions,
+    nearToArray: (near: AdjacentGrid) => {
+        const nearArray = [near.l, near.lu, near.u, near.r, near.rd, near.d];
+        return nearArray.map<[Point, string]>((val, i) => [directions[i], val]);
+    },
     l: directions[0],
     lu: directions[1],
     u: directions[2],
@@ -105,6 +110,11 @@ export class AdjacentGrid {
 
 export type Seeds = ([number, number, string])[];
 
+export enum ConnectionType {
+    strong,
+    weak
+}
+
 export class Grid {
     _data: { [key: string]: string };
 
@@ -113,8 +123,10 @@ export class Grid {
     constructor(seeds?: Seeds) {
         this._data = {};
         if (seeds != null) {
+            let prevPoint: Point = null;
             for (let seed of seeds) {
-                if (!this.put(new Point(seed[0], seed[1]), seed[2])) {
+                const curPoint = new Point(seed[0], seed[1]);
+                if (!this.put(curPoint, seed[2])) {
                     throw new Error("Duplicated seed exists!");
                 }
             }

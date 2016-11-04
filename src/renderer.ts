@@ -67,15 +67,14 @@ export class Renderer {
         return this._iterator;
     }
 
-    constructor(container: HTMLElement, width: number, height: number, grid_size?: number, config?: OritatamiConfig) {
-        this.paper = Raphael(container, width, height);
+    constructor(width: number, height: number, grid_size?: number, config?: OritatamiConfig) {
+        this.paper = Raphael("paper", width, height);
         this._grid_size = grid_size ? grid_size : 100;
         this._circle_size = 10;
         this._grid = new Grid();
         this._width = width;
         this._height = height;
-        const wrapper = $("<div></div>");
-        this.paper.canvas.parentElement.replaceChild(wrapper[0], this.paper.canvas);
+        let wrapper = $("#paper").empty();
         wrapper.append(this.paper.canvas);
         const buttonDiv = $("<div class=\"buttons\"></div>");
         wrapper.append(buttonDiv);

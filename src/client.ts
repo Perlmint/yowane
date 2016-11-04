@@ -7,7 +7,7 @@ $(document).ready(() => {
     $("#oritatami-submit").click(() => {
         const configStr = $("#oritatami-input").text();
         const config = JSON.parse(configStr);
-        renderer = new Renderer($("#paper")[0], 500, 500, 100, config);
+        renderer = new Renderer(500, 500, 100, config);
         return false;
     });
 });

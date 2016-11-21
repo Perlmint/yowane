@@ -193,6 +193,29 @@ export class Renderer1 {
         }
     }
 
+    drawGrid() {
+        const size: number = 1000;
+        for (let i = -size; i < size; ++i) {
+            // X axis
+            let point = new Point(i, -size);
+            let nextPoint = new Point(i, size);
+
+            this.drawConnection(point, nextPoint, ConnectionType.weak);
+
+            // Y axis
+            point = new Point(-size, i);
+            nextPoint = new Point(size, i);
+
+            this.drawConnection(point, nextPoint, ConnectionType.weak);
+
+            // XY axis(?)
+            point = new Point(i + size, -size);
+            nextPoint = new Point(i - size, size);
+
+            this.drawConnection(point, nextPoint, ConnectionType.weak);
+        }
+    }
+
     drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {
         const near = this._grid.getNear(point);
         this.drawCircle(point, near.c, nodeAnimation);

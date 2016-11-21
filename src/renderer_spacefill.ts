@@ -1,5 +1,5 @@
 /// <reference path="../typings/index.d.ts" />
-import { Oritatami, Rule, OritatamiIterator, OritatamiConfig } from "./oritatami";
+import { Filler, TriangleFiller } from "./spacefilling";
 import { Grid, Point, Seeds, ConnectionType } from "./grid";
 import "d3";
 import * as Raphael from "raphael";
@@ -14,11 +14,11 @@ class AnimationContext {
 }
 
 class RenderIterator {
-    _renderer: Renderer;
-    _iterator: OritatamiIterator;
+    _renderer: Renderer1;
+    _iterator: Filler;
     _candidates: Point[];
 
-    constructor(renderer: Renderer, iterator: OritatamiIterator) {
+    constructor(renderer: Renderer1, iterator: Filler) {
         this._renderer = renderer;
         this._iterator = iterator;
         this._candidates = null;
@@ -32,7 +32,7 @@ class RenderIterator {
                 throw new Error("Select one point from cadiates");
             }
         }
-        if (choice) {
+/*        if (choice) {
             this._iterator.next(choice);
             this._renderer.drawNode(choice, {
                 ms: NODE_ANIMATION_MS,
@@ -43,11 +43,11 @@ class RenderIterator {
                 });
         }
         this._candidates = this._iterator.predict();
-        return this._candidates;
+*/        return this._candidates;
     }
 
     isDone(): boolean {
-        return this._iterator.predict() == null;
+        return true;// this._iterator.predict() == null;
     }
 }
 
@@ -84,7 +84,7 @@ export class Color {
     }
 }
 
-export class Theme {
+export class Theme1 {
     _data: { [key: string]: Color };
 
     constructor(config?: { [key: string]: string }) {
@@ -117,7 +117,7 @@ export class Theme {
     }
 }
 
-export class Renderer {
+export class Renderer1 {
     paper: RaphaelPaper;
     _width: number;
     _height: number;
@@ -125,41 +125,34 @@ export class Renderer {
     _circle_size: number;
     _grid: Grid;
     _last_point: Point;
-    _oritatami: Oritatami;
-    _rule: Rule;
-    _theme: Theme;
+    _filler: Filler;
+    _theme: Theme1;
     _iterator: RenderIterator;
 
     get iterator(): RenderIterator {
         return this._iterator;
     }
 
-    get theme(): Theme {
+    get theme(): Theme1 {
         return this._theme;
     }
 
-    constructor(width: number, height: number, grid_size?: number, theme?: Theme, config?: OritatamiConfig) {
+    constructor(width: number, height: number, grid_size?: number, theme?: Theme1) {
         this.paper = Raphael("paper", width, height);
         this._grid_size = grid_size ? grid_size : 100;
         this._circle_size = 10;
         this._grid = new Grid();
         this._width = width;
         this._height = height;
-        this._theme = theme ? theme : new Theme();
+        this._theme = theme ? theme : new Theme1();
 
-        this.createOritatamiHTML(config);
-    }
-
-    set oritatami(v: OritatamiConfig) {
-        this._rule = new Rule(v.rule);
-        this._oritatami = new Oritatami(v.delay, this._rule);
-        this._setSeeds(v.seed);
-        this._createIterator(v.sequence);
+        this.drawGrid();
     }
 
     _createIterator(seq: string[]) {
-        const itr = this._oritatami.push(this._grid, this._last_point, seq);
-        this._iterator = new RenderIterator(this, itr);
+        /*        const itr = this._oritatami.push(this._grid, this._last_point, seq);
+                this._iterator = new RenderIterator(this, itr);
+                */
     }
 
     _setSeeds(seeds: Seeds) {
@@ -174,16 +167,19 @@ export class Renderer {
         }
     }
 
-    createOritatamiHTML(config?: OritatamiConfig) {
+    createSpaceFillHTML(config?: Filler) {
         let wrapper = $("#paper").empty();
         wrapper.append(this.paper.canvas);
+
         const buttonDiv = $("<div class=\"buttons\"></div>");
         wrapper.append(buttonDiv);
+
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => {
             this._iterator.next();
         });
         buttonDiv.append(nextButton);
+
         const autoButton = $("<button class=\"btn btn-default\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
@@ -191,8 +187,9 @@ export class Renderer {
             }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
         buttonDiv.append(autoButton);
+
         if (config) {
-            this.oritatami = config;
+            this._filler = config;
         }
     }
 
@@ -201,13 +198,13 @@ export class Renderer {
         this.drawCircle(point, near.c, nodeAnimation);
         const weakConnected: Point[] = [];
         for (const info of Point.directions.nearToArray(near)) {
-            const rel = this._oritatami.rule.get(info[1], near.c);
-            const absPoint = point.add(info[0]);
-            if (absPoint === this._last_point) {
-                continue;
-            } else if (rel !== 0) {
-                weakConnected.push(new Point(absPoint));
-            }
+            /*            const rel = this._oritatami.rule.get(info[1], near.c);
+                        const absPoint = point.add(info[0]);
+                        if (absPoint === this._last_point) {
+                            continue;
+                        } else if (rel !== 0) {
+                            weakConnected.push(new Point(absPoint));
+                        }*/
         }
 
         for (const connected of weakConnected) {

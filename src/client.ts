@@ -4,7 +4,7 @@ import { OritatamiRenderer } from "./renderer_oritatami";
 import { SpaceFillRenderer } from "./renderer_spacefill";
 import { OritatamiConfig } from "./oritatami";
 import { Filler } from "./spacefilling";
-import { CanvasManager } from "./canvas_manage";
+import { CanvasManager } from "./canvas_manager";
 import * as $ from "jquery";
 
 $(document).ready(() => {

@@ -13,8 +13,8 @@ $(document).ready(() => {
         const configStr = $("#oritatami-input").val();
         const config = JSON.parse(configStr) as OritatamiConfig;
 
-        let paperManager = new CanvasManager("paper", 500, 500);
-        let renderer = new OritatamiRenderer(paperManager, 100, new Theme({
+        let paperManager = new CanvasManager("paper", 500, 500, 100);
+        let renderer = new OritatamiRenderer(paperManager, new Theme({
             a: "#a69dd8",
             b: "#0c35b0",
             c: "#f82750",
@@ -54,8 +54,8 @@ $(document).ready(() => {
         const configStr = $("#spacefill-input").val();
         const config = JSON.parse(configStr) as OritatamiConfig;
 
-        let paperManager = new CanvasManager("paper", 500, 500);
-        let renderer = new SpaceFillRenderer(paperManager, 100, new Theme({
+        let paperManager = new CanvasManager("paper", 500, 500, 100);
+        let renderer = new SpaceFillRenderer(paperManager, new Theme({
             a: "#a69dd8",
             b: "#0c35b0",
             c: "#f82750",

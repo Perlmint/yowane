@@ -96,12 +96,12 @@ export class Renderer {
         return this._theme;
     }
 
-    constructor(canvas: CanvasManager, grid_size?: number, theme?: Theme) {
+    constructor(canvas: CanvasManager, theme?: Theme) {
         this.canvas = canvas;
         this.paper = canvas.getPaper();
         this._width = this.paper.width;
         this._height = this.paper.height;
-        this._grid_size = grid_size ? grid_size : 100;
+        this._grid_size = this.canvas.gridSize;
         this._circle_size = 10;
         this._grid = new Grid();
         this._theme = theme ? theme : new Theme();

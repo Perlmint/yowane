@@ -7,6 +7,8 @@ export class CanvasManager {
     //    http://jsfiddle.net/9zu4U/10/ 
     paper: RaphaelPaper;
     canvasID: string;
+    gridSize: number;
+
     dX: number = 0;
     dY: number = 0;
 
@@ -18,11 +20,12 @@ export class CanvasManager {
 
     mouseDown: boolean = false;
 
-    constructor(canvasID: string, width: number, height: number) {
+    constructor(canvasID: string, width: number, height: number, gridSize: number) {
         /** Initialization code. 
         * If you use your own event management code, change it as required.
          */
         this.canvasID = canvasID;
+        this.gridSize = gridSize;
         this.width = width;
         this.height = height;
 

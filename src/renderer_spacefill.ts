@@ -73,8 +73,8 @@ export class SpaceFillRenderer extends Renderer {
         return this._theme;
     }
 
-    constructor(canvas: CanvasManager, grid_size?: number, theme?: Theme) {
-        super(canvas, grid_size, theme);
+    constructor(canvas: CanvasManager, theme?: Theme) {
+        super(canvas, theme);
 
         this.drawGrid();
     }

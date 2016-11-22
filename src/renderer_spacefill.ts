@@ -141,7 +141,7 @@ export class Renderer1 {
         this.paper = paper;
         this._width = this.paper.width;
         this._height = this.paper.height;
-        this._grid_size = grid_size ? grid_size : 100;
+        this._grid_size = grid_size ? grid_size : 20;
         this._circle_size = 10;
         this._grid = new Grid();
         this._theme = theme ? theme : new Theme1();
@@ -194,7 +194,7 @@ export class Renderer1 {
     }
 
     drawGrid() {
-        const size: number = 100;
+        const size: number = 20;
         for (let i = -size; i < size; ++i) {
             // X axis
             let point = new Point(i, -size);

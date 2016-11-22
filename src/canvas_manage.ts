@@ -60,7 +60,7 @@ export class CanvasManager {
             self.dX *= x;
             self.dY *= y;
 
-            self.paper.setViewBox(self.x + self.x, self.y + self.dY, self.width, self.height, true);
+            self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
         });
 
         paperElement.mouseup(function (e) {

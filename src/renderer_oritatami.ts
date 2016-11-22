@@ -52,39 +52,6 @@ class RenderIterator {
     }
 }
 
-export class Color {
-    code: string;
-    r: number;
-    g: number;
-    b: number;
-
-    constructor(color: Color);
-    constructor(codeOrName: string);
-    constructor(r: number, g: number, b: number);
-    constructor(a1: string | number | Color, a2?: number, a3?: number) {
-        if (typeof a1 === "string") {
-            this.code = a1;
-        } else if (typeof a1 === "number") {
-            this.r = a1;
-            this.g = a2;
-            this.b = a3;
-        } else {
-            this.code = a1.code;
-            this.r = a1.r;
-            this.g = a1.g;
-            this.b = a1.b;
-        }
-    }
-
-    toString(): string {
-        if (this.code) {
-            return this.code;
-        } else {
-            return `rgb(${this.r},${this.g},${this.b})`;
-        }
-    }
-}
-
 export class OritatamiRenderer extends Renderer {
     paper: RaphaelPaper;
     _gridSet: RaphaelSet;

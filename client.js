@@ -56,15 +56,15 @@
 	const renderer_1 = __webpack_require__(2);
 	const renderer_oritatami_1 = __webpack_require__(5);
 	const renderer_spacefill_1 = __webpack_require__(8);
-	const canvas_manage_1 = __webpack_require__(9);
+	const canvas_manager_1 = __webpack_require__(9);
 	const $ = __webpack_require__(7);
 	$(document).ready(() => {
 	    // Oritatami
 	    $("#oritatami-submit").click(() => {
 	        const configStr = $("#oritatami-input").val();
 	        const config = JSON.parse(configStr);
-	        let paperManager = new canvas_manage_1.CanvasManager("paper", 500, 500);
-	        let renderer = new renderer_oritatami_1.OritatamiRenderer(paperManager.getPaper(), 100, new renderer_1.Theme({
+	        let paperManager = new canvas_manager_1.CanvasManager("paper", 500, 500, 100);
+	        let renderer = new renderer_oritatami_1.OritatamiRenderer(paperManager, new renderer_1.Theme({
 	            a: "#a69dd8",
 	            b: "#0c35b0",
 	            c: "#f82750",
@@ -100,8 +100,8 @@
 	    $("#spacefill-submit").click(() => {
 	        const configStr = $("#spacefill-input").val();
 	        const config = JSON.parse(configStr);
-	        let paperManager = new canvas_manage_1.CanvasManager("paper", 500, 500);
-	        let renderer = new renderer_spacefill_1.SpaceFillRenderer(paperManager.getPaper(), 100, new renderer_1.Theme({
+	        let paperManager = new canvas_manager_1.CanvasManager("paper", 500, 500, 100);
+	        let renderer = new renderer_spacefill_1.SpaceFillRenderer(paperManager, new renderer_1.Theme({
 	            a: "#a69dd8",
 	            b: "#0c35b0",
 	            c: "#f82750",
@@ -206,11 +206,12 @@
 	}
 	exports.Theme = Theme;
 	class Renderer {
-	    constructor(paper, grid_size, theme) {
-	        this.paper = paper;
-	        this._width = paper.width;
-	        this._height = paper.height;
-	        this._grid_size = grid_size ? grid_size : 100;
+	    constructor(canvas, theme) {
+	        this.canvas = canvas;
+	        this.paper = canvas.getPaper();
+	        this._width = this.paper.width;
+	        this._height = this.paper.height;
+	        this._grid_size = this.canvas.gridSize;
 	        this._circle_size = 10;
 	        this._grid = new grid_1.Grid();
 	        this._theme = theme ? theme : new Theme();
@@ -239,7 +240,7 @@
 	        this._gridSet = this.paper.setFinish();
 	    }
 	    drawCircle(p, text, animation) {
-	        const [x, y] = this._getScreenCoord(p);
+	        const [x, y] = this.canvas.getScreenCoord(p);
 	        const attr = {
 	            fill: "white",
 	            "stroke": this._theme.get(text),
@@ -258,7 +259,7 @@
 	        }
 	    }
 	    drawConnection(p1, p2, type, animation, color) {
-	        const screenCoord = [this._getScreenCoord(p1), this._getScreenCoord(p2)];
+	        const screenCoord = [this.canvas.getScreenCoord(p1), this.canvas.getScreenCoord(p2)];
 	        const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
 	        const attr = {
 	            "stroke-dasharray": type === grid_1.ConnectionType.strong ? "" : "- "
@@ -280,13 +281,6 @@
 	    }
 	    _drawPath(path) {
 	        return this.paper.path(path);
-	    }
-	    _getScreenCoord(p) {
-	        let tempX = p.x + Math.cos(Math.PI / 3) * p.y;
-	        let tempY = Math.sin(Math.PI / 3) * p.y;
-	        let retX = Math.round(this._grid_size * (1 + tempX));
-	        let retY = Math.round(this._height - this._grid_size * (1 + tempY));
-	        return [retX, retY];
 	    }
 	}
 	exports.Renderer = Renderer;
@@ -16906,36 +16900,9 @@
 	        return this._iterator.predict() == null;
 	    }
 	}
-	class Color {
-	    constructor(a1, a2, a3) {
-	        if (typeof a1 === "string") {
-	            this.code = a1;
-	        }
-	        else if (typeof a1 === "number") {
-	            this.r = a1;
-	            this.g = a2;
-	            this.b = a3;
-	        }
-	        else {
-	            this.code = a1.code;
-	            this.r = a1.r;
-	            this.g = a1.g;
-	            this.b = a1.b;
-	        }
-	    }
-	    toString() {
-	        if (this.code) {
-	            return this.code;
-	        }
-	        else {
-	            return `rgb(${this.r},${this.g},${this.b})`;
-	        }
-	    }
-	}
-	exports.Color = Color;
 	class OritatamiRenderer extends renderer_1.Renderer {
-	    constructor(paper, grid_size, theme) {
-	        super(paper, grid_size, theme);
+	    constructor(canvas, theme) {
+	        super(canvas, theme);
 	        this.drawGrid();
 	    }
 	    get iterator() {
@@ -27495,8 +27462,8 @@
 	    }
 	}
 	class SpaceFillRenderer extends renderer_1.Renderer {
-	    constructor(paper, grid_size, theme) {
-	        super(paper, grid_size, theme);
+	    constructor(canvas, theme) {
+	        super(canvas, theme);
 	        this.drawGrid();
 	    }
 	    get iterator() {
@@ -27567,20 +27534,20 @@
 	"use strict";
 	const Raphael = __webpack_require__(10);
 	class CanvasManager {
-	    constructor(canvasID, width, height) {
+	    constructor(canvasID, width, height, gridSize) {
 	        this.dX = 0;
 	        this.dY = 0;
-	        this.oX = 0;
-	        this.oY = 0;
 	        this.x = 0;
 	        this.y = 0;
 	        this.width = 0;
 	        this.height = 0;
+	        this.zoom = 1;
 	        this.mouseDown = false;
 	        /** Initialization code.
 	        * If you use your own event management code, change it as required.
 	         */
 	        this.canvasID = canvasID;
+	        this.gridSize = gridSize;
 	        this.width = width;
 	        this.height = height;
 	        this.paper = Raphael(this.canvasID, this.width, this.height);
@@ -27624,6 +27591,15 @@
 	    getPaper() {
 	        return this.paper;
 	    }
+	    getZoom() {
+	        return this.zoom;
+	    }
+	    getX() {
+	        return this.x;
+	    }
+	    getY() {
+	        return this.y;
+	    }
 	    /** This is high-level function.
 	     * It must react to delta being more/less than zero.
 	     */
@@ -27631,13 +27607,13 @@
 	        let oldWidth = this.width;
 	        let oldHeight = this.height;
 	        if (delta < 0) {
-	            this.width *= 0.95;
-	            this.height *= 0.95;
+	            this.zoom *= 0.95;
 	        }
 	        else {
-	            this.width *= 1.05;
-	            this.height *= 1.05;
+	            this.zoom *= 1.05;
 	        }
+	        this.width = this.paper.width * this.zoom;
+	        this.height = this.paper.height * this.zoom;
 	        this.x -= (this.width - oldWidth) / 2;
 	        this.y -= (this.height - oldHeight) / 2;
 	        this.paper.setViewBox(this.x, this.y, this.width, this.height, true);
@@ -27673,6 +27649,13 @@
 	            event.preventDefault();
 	        }
 	        event.returnValue = false;
+	    }
+	    getScreenCoord(p) {
+	        let tempX = p.x + Math.cos(Math.PI / 3) * p.y;
+	        let tempY = Math.sin(Math.PI / 3) * p.y;
+	        let retX = Math.round(this.gridSize * (1 + tempX));
+	        let retY = Math.round(this.paper.height - this.gridSize * (1 + tempY));
+	        return [retX, retY];
 	    }
 	}
 	exports.CanvasManager = CanvasManager;

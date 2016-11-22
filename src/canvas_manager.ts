@@ -16,6 +16,7 @@ export class CanvasManager {
     y: number = 0;
     width: number = 0;
     height: number = 0;
+    zoom: number = 1;
 
     mouseDown: boolean = false;
 
@@ -78,6 +79,10 @@ export class CanvasManager {
         return this.paper;
     }
 
+    getZoom(): number {
+        return this.zoom;
+    }
+
     /** This is high-level function.
      * It must react to delta being more/less than zero.
      */
@@ -86,12 +91,13 @@ export class CanvasManager {
         let oldHeight = this.height;
 
         if (delta < 0) {
-            this.width *= 0.95;
-            this.height *= 0.95;
+            this.zoom *= 0.95;
         } else {
-            this.width *= 1.05;
-            this.height *= 1.05;
+            this.zoom *= 1.05;
         }
+
+        this.width = this.paper.width * this.zoom;
+        this.height = this.paper.height * this.zoom;
 
         this.x -= (this.width - oldWidth) / 2;
         this.y -= (this.height - oldHeight) / 2;

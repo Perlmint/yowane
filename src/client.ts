@@ -52,7 +52,7 @@ $(document).ready(() => {
     $("#spacefill-submit").click(() => {
         const configStr = $("#spacefill-input").val();
         const config = JSON.parse(configStr) as OritatamiConfig;
-        
+
         let paperManager = new CanvasManager("paper", 500, 500);
         let renderer = new Renderer1(paperManager.getPaper(), 100, new Theme({
             a: "#a69dd8",

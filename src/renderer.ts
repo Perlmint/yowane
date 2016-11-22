@@ -1,6 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 import { Oritatami, Rule, OritatamiIterator, OritatamiConfig } from "./oritatami";
 import { Grid, Point, Seeds, ConnectionType } from "./grid";
+import { CanvasManager } from "./canvas_manager";
 import "d3";
 import * as Raphael from "raphael";
 import * as $ from "jquery";
@@ -80,6 +81,7 @@ export class Theme {
 }
 
 export class Renderer {
+    canvas: CanvasManager;
     paper: RaphaelPaper;
     _gridSet: RaphaelSet;
     _width: number;
@@ -94,10 +96,11 @@ export class Renderer {
         return this._theme;
     }
 
-    constructor(paper: RaphaelPaper, grid_size?: number, theme?: Theme) {
-        this.paper = paper;
-        this._width = paper.width;
-        this._height = paper.height;
+    constructor(canvas: CanvasManager, grid_size?: number, theme?: Theme) {
+        this.canvas = canvas;
+        this.paper = canvas.getPaper();
+        this._width = this.paper.width;
+        this._height = this.paper.height;
         this._grid_size = grid_size ? grid_size : 100;
         this._circle_size = 10;
         this._grid = new Grid();

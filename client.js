@@ -54,9 +54,12 @@
 	"use strict";
 	/// <reference path="../typings/index.d.ts" />
 	const renderer_1 = __webpack_require__(2);
+	const renderer_spacefill_1 = __webpack_require__(8);
+	const canvas_manage_1 = __webpack_require__(9);
 	const $ = __webpack_require__(7);
 	$(document).ready(() => {
 	    let renderer;
+	    // Oritatami
 	    $("#oritatami-submit").click(() => {
 	        const configStr = $("#oritatami-input").val();
 	        const config = JSON.parse(configStr);
@@ -89,6 +92,44 @@
 	            z: "#3db35a"
 	        }));
 	        renderer.oritatami = config;
+	        renderer.createOritatamiHTML();
+	        return false;
+	    });
+	    // Space filling
+	    $("#spacefill-submit").click(() => {
+	        const configStr = $("#spacefill-input").val();
+	        const config = JSON.parse(configStr);
+	        let paperManager = new canvas_manage_1.CanvasManager("paper", 500, 500);
+	        let renderer = new renderer_spacefill_1.Renderer1(paperManager.getPaper(), 100, new renderer_1.Theme({
+	            a: "#a69dd8",
+	            b: "#0c35b0",
+	            c: "#f82750",
+	            d: "#0ebd31",
+	            e: "#5fab4f",
+	            f: "#c538cf",
+	            g: "#014a59",
+	            h: "#e14af8",
+	            i: "#9fb730",
+	            j: "#4bec60",
+	            k: "#ef9345",
+	            l: "#d2ece0",
+	            m: "#9cda80",
+	            n: "#dbc07c",
+	            o: "#7328dd",
+	            p: "#1e9942",
+	            q: "#621b7b",
+	            r: "#c830b2",
+	            s: "#362332",
+	            t: "#e8c55d",
+	            u: "#bd8787",
+	            v: "#66c6a4",
+	            w: "#21ec4b",
+	            x: "#782364",
+	            y: "#c3bf15",
+	            z: "#3db35a"
+	        }));
+	        //        renderer.oritatami = config;
+	        renderer.createSpaceFillHTML();
 	        return false;
 	    });
 	});
@@ -208,25 +249,7 @@
 	        this._width = width;
 	        this._height = height;
 	        this._theme = theme ? theme : new Theme();
-	        let wrapper = $("#paper").empty();
-	        wrapper.append(this.paper.canvas);
-	        const buttonDiv = $("<div class=\"buttons\"></div>");
-	        wrapper.append(buttonDiv);
-	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
-	        nextButton.click(() => {
-	            this._iterator.next();
-	        });
-	        buttonDiv.append(nextButton);
-	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
-	        autoButton.click(() => {
-	            setInterval(() => {
-	                this._iterator.next();
-	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
-	        });
-	        buttonDiv.append(autoButton);
-	        if (config) {
-	            this.oritatami = config;
-	        }
+	        this.createOritatamiHTML(config);
 	    }
 	    get iterator() {
 	        return this._iterator;
@@ -253,6 +276,27 @@
 	            }
 	            this.drawNode(curPoint);
 	            prevPoint = curPoint;
+	        }
+	    }
+	    createOritatamiHTML(config) {
+	        let wrapper = $("#paper").empty();
+	        wrapper.append(this.paper.canvas);
+	        const buttonDiv = $("<div class=\"buttons\"></div>");
+	        wrapper.append(buttonDiv);
+	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
+	        nextButton.click(() => {
+	            this._iterator.next();
+	        });
+	        buttonDiv.append(nextButton);
+	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
+	        autoButton.click(() => {
+	            setInterval(() => {
+	                this._iterator.next();
+	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
+	        });
+	        buttonDiv.append(autoButton);
+	        if (config) {
+	            this.oritatami = config;
 	        }
 	    }
 	    drawNode(point, nodeAnimation, pathAnimation) {
@@ -27332,6 +27376,359 @@
 
 	return jQuery;
 	} );
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	const grid_1 = __webpack_require__(4);
+	__webpack_require__(5);
+	const $ = __webpack_require__(7);
+	const NODE_ANIMATION_MS = 500;
+	const PATH_ANIMATION_MS = 300;
+	class AnimationContext {
+	}
+	class RenderIterator {
+	    constructor(renderer, iterator) {
+	        this._renderer = renderer;
+	        this._iterator = iterator;
+	        this._candidates = null;
+	    }
+	    next(choice) {
+	        if (choice == null && this._candidates != null) {
+	            if (this._candidates.length === 1) {
+	                choice = this._candidates[0];
+	            }
+	            else {
+	                throw new Error("Select one point from cadiates");
+	            }
+	        }
+	        /*        if (choice) {
+	                    this._iterator.next(choice);
+	                    this._renderer.drawNode(choice, {
+	                        ms: NODE_ANIMATION_MS,
+	                        easing: "elastic"
+	                    }, {
+	                            ms: PATH_ANIMATION_MS,
+	                            easing: "easeOut"
+	                        });
+	                }
+	                this._candidates = this._iterator.predict();
+	        */ return this._candidates;
+	    }
+	    isDone() {
+	        return true; // this._iterator.predict() == null;
+	    }
+	}
+	class Color {
+	    constructor(a1, a2, a3) {
+	        if (typeof a1 === "string") {
+	            this.code = a1;
+	        }
+	        else if (typeof a1 === "number") {
+	            this.r = a1;
+	            this.g = a2;
+	            this.b = a3;
+	        }
+	        else {
+	            this.code = a1.code;
+	            this.r = a1.r;
+	            this.g = a1.g;
+	            this.b = a1.b;
+	        }
+	    }
+	    toString() {
+	        if (this.code) {
+	            return this.code;
+	        }
+	        else {
+	            return `rgb(${this.r},${this.g},${this.b})`;
+	        }
+	    }
+	}
+	exports.Color = Color;
+	class Theme1 {
+	    constructor(config) {
+	        this._data = {};
+	        if (config) {
+	            Object.keys(config).forEach(key => {
+	                this.setColor(key, new Color(config[key]));
+	            });
+	        }
+	    }
+	    setColor(type, color) {
+	        color = new Color(color);
+	        if (typeof type === "string") {
+	            this._data[type] = color;
+	        }
+	        else {
+	            type.forEach(t => {
+	                this._data[t] = color;
+	            });
+	        }
+	        return this;
+	    }
+	    get(type) {
+	        if (this._data[type] !== undefined) {
+	            return this._data[type].toString();
+	        }
+	        else {
+	            return "black";
+	        }
+	    }
+	}
+	exports.Theme1 = Theme1;
+	class Renderer1 {
+	    constructor(paper, grid_size, theme) {
+	        this.paper = paper;
+	        this._width = this.paper.width;
+	        this._height = this.paper.height;
+	        this._grid_size = grid_size ? grid_size : 100;
+	        this._circle_size = 10;
+	        this._grid = new grid_1.Grid();
+	        this._theme = theme ? theme : new Theme1();
+	        this.drawGrid();
+	    }
+	    get iterator() {
+	        return this._iterator;
+	    }
+	    get theme() {
+	        return this._theme;
+	    }
+	    _createIterator(seq) {
+	        /*        const itr = this._oritatami.push(this._grid, this._last_point, seq);
+	                this._iterator = new RenderIterator(this, itr);
+	                */
+	    }
+	    _setSeeds(seeds) {
+	        let prevPoint = null;
+	        for (const seed of seeds) {
+	            const curPoint = new grid_1.Point(seed[0], seed[1]);
+	            if (!this._grid.put(curPoint, seed[2])) {
+	                throw new Error("Invalid seed!");
+	            }
+	            this.drawNode(curPoint);
+	            prevPoint = curPoint;
+	        }
+	    }
+	    createSpaceFillHTML(config) {
+	        let wrapper = $("#paper").empty();
+	        wrapper.append(this.paper.canvas);
+	        const buttonDiv = $("<div class=\"buttons\"></div>");
+	        wrapper.append(buttonDiv);
+	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
+	        nextButton.click(() => {
+	            this._iterator.next();
+	        });
+	        buttonDiv.append(nextButton);
+	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
+	        autoButton.click(() => {
+	            setInterval(() => {
+	                this._iterator.next();
+	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
+	        });
+	        buttonDiv.append(autoButton);
+	        if (config) {
+	            this._filler = config;
+	        }
+	    }
+	    drawGrid() {
+	        const size = 100;
+	        for (let i = -size; i < size; ++i) {
+	            // X axis
+	            let point = new grid_1.Point(i, -size);
+	            let nextPoint = new grid_1.Point(i, size);
+	            this.drawConnection(point, nextPoint, grid_1.ConnectionType.weak);
+	            // Y axis
+	            point = new grid_1.Point(-size, i);
+	            nextPoint = new grid_1.Point(size, i);
+	            this.drawConnection(point, nextPoint, grid_1.ConnectionType.weak);
+	            // XY axis(?)
+	            point = new grid_1.Point(i + size, -size);
+	            nextPoint = new grid_1.Point(i - size, size);
+	            this.drawConnection(point, nextPoint, grid_1.ConnectionType.weak);
+	        }
+	    }
+	    drawNode(point, nodeAnimation, pathAnimation) {
+	        const near = this._grid.getNear(point);
+	        this.drawCircle(point, near.c, nodeAnimation);
+	        const weakConnected = [];
+	        for (const info of grid_1.Point.directions.nearToArray(near)) {
+	        }
+	        for (const connected of weakConnected) {
+	            this.drawConnection(connected, point, grid_1.ConnectionType.weak, pathAnimation);
+	        }
+	        if (this._last_point) {
+	            this.drawConnection(this._last_point, point, grid_1.ConnectionType.strong, pathAnimation);
+	        }
+	        this._last_point = new grid_1.Point(point);
+	    }
+	    drawCircle(p, text, animation) {
+	        const [x, y] = this._getScreenCoord(p);
+	        const attr = {
+	            fill: "white",
+	            "stroke": this._theme.get(text),
+	            "stroke-width": 3,
+	        };
+	        if (animation) {
+	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
+	            this.paper.text(x, y, text).attr({
+	                "font-size": 15,
+	                opacity: 0
+	            }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	        }
+	        else {
+	            this.paper.circle(x, y, this._circle_size).attr(attr);
+	            this.paper.text(x, y, text).attr("font-size", 15);
+	        }
+	    }
+	    drawConnection(p1, p2, type, animation) {
+	        const screenCoord = [this._getScreenCoord(p1), this._getScreenCoord(p2)];
+	        const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
+	        if (animation) {
+	            this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
+	                .attr("stroke-dasharray", type === grid_1.ConnectionType.strong ? "" : "- ")
+	                .toBack()
+	                .animate({ path: pathStr }, animation.ms, animation.easing);
+	        }
+	        else {
+	            this._drawPath(pathStr)
+	                .attr("stroke-dasharray", type === grid_1.ConnectionType.strong ? "" : "- ")
+	                .toBack();
+	        }
+	    }
+	    _drawPath(path) {
+	        return this.paper.path(path);
+	    }
+	    _getScreenCoord(p) {
+	        let tempX = p.x + Math.cos(Math.PI / 3) * p.y;
+	        let tempY = Math.sin(Math.PI / 3) * p.y;
+	        let retX = Math.round(this._grid_size * (1 + tempX));
+	        let retY = Math.round(this._height - this._grid_size * (1 + tempY));
+	        return [retX, retY];
+	    }
+	}
+	exports.Renderer1 = Renderer1;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	const Raphael = __webpack_require__(6);
+	class CanvasManager {
+	    constructor(canvasID, width, height) {
+	        this.dX = 0;
+	        this.dY = 0;
+	        this.oX = 0;
+	        this.oY = 0;
+	        this.x = 0;
+	        this.y = 0;
+	        this.width = 0;
+	        this.height = 0;
+	        this.mouseDown = false;
+	        /** Initialization code.
+	        * If you use your own event management code, change it as required.
+	         */
+	        this.canvasID = canvasID;
+	        this.width = width;
+	        this.height = height;
+	        this.paper = Raphael(this.canvasID, this.width, this.height);
+	        const self = this;
+	        window.onmousewheel = function (e) { self.wheel(e); };
+	        document.onmousewheel = function (e) { self.wheel(e); };
+	        let startX = 0;
+	        let startY = 0;
+	        //Pan
+	        const paperElement = $($(this.canvasID).children("svg")[0]);
+	        paperElement.mousedown(function (e) {
+	            if (this.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
+	                return;
+	            }
+	            this.mousedown = true;
+	            startX = e.pageX;
+	            startY = e.pageY;
+	        });
+	        paperElement.mousemove(function (e) {
+	            if (this.mousedown === false) {
+	                return;
+	            }
+	            this.dX = startX - e.pageX;
+	            this.dY = startY - e.pageY;
+	            const x = this.width / this.paper.width;
+	            const y = this.height / this.paper.height;
+	            this.dX *= x;
+	            this.dY *= y;
+	            //alert(viewBoxWidth +" "+ paper.width );
+	            this.paper.setViewBox(this.x + this.x, this.y + this.dY, this.width, this.height);
+	        });
+	        paperElement.mouseup(function (e) {
+	            if (this.mousedown === false) {
+	                return;
+	            }
+	            this.x += this.dX;
+	            this.y += this.dY;
+	            this.mousedown = false;
+	        });
+	    }
+	    getPaper() {
+	        return this.paper;
+	    }
+	    /** This is high-level function.
+	     * It must react to delta being more/less than zero.
+	     */
+	    handle(delta) {
+	        let oldWidth = this.width;
+	        let oldHeight = this.height;
+	        if (delta < 0) {
+	            this.width *= 0.95;
+	            this.height *= 0.95;
+	        }
+	        else {
+	            this.width *= 1.05;
+	            this.height *= 1.05;
+	        }
+	        this.x -= (this.width - oldWidth) / 2;
+	        this.y -= (this.height - oldHeight) / 2;
+	        this.paper.setViewBox(this.x, this.y, this.width, this.height, true);
+	    }
+	    /** Event handler for mouse wheel event.
+	     */
+	    wheel(event) {
+	        var delta = 0;
+	        if (!event) {
+	            event = window.event;
+	        }
+	        if (event.wheelDelta) {
+	            delta = event.wheelDelta / 120;
+	        }
+	        else if (event.detail) {
+	            /** In Mozilla, sign of delta is different than in IE.
+	             * Also, delta is multiple of 3.
+	             */
+	            delta = -event.detail / 3;
+	        }
+	        /** If delta is nonzero, handle it.
+	         * Basically, delta is now positive if wheel was scrolled up,
+	         * and negative, if wheel was scrolled down.
+	         */
+	        if (delta) {
+	            this.handle(delta);
+	        }
+	        /** Prevent default actions caused by mouse wheel.
+	         * That might be ugly, but we handle scrolls somehow
+	         * anyway, so don't bother here..
+	         */
+	        if (event.preventDefault) {
+	            event.preventDefault();
+	        }
+	        event.returnValue = false;
+	    }
+	}
+	exports.CanvasManager = CanvasManager;
 
 
 /***/ }

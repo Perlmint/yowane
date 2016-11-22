@@ -1,19 +1,20 @@
 /// <reference path="../typings/index.d.ts" />
 import { Renderer, Theme } from "./renderer";
-import { Renderer1, Theme1 } from "./renderer_spacefill";
+import { OritatamiRenderer } from "./renderer_oritatami";
+import { SpaceFillRenderer } from "./renderer_spacefill";
 import { OritatamiConfig } from "./oritatami";
 import { Filler } from "./spacefilling";
 import { CanvasManager } from "./canvas_manage";
 import * as $ from "jquery";
 
 $(document).ready(() => {
-    let renderer: Renderer;
-
     // Oritatami
     $("#oritatami-submit").click(() => {
         const configStr = $("#oritatami-input").val();
         const config = JSON.parse(configStr) as OritatamiConfig;
-        renderer = new Renderer(500, 500, 100, new Theme({
+
+        let paperManager = new CanvasManager("paper", 500, 500);
+        let renderer = new OritatamiRenderer(paperManager.getPaper(), 100, new Theme({
             a: "#a69dd8",
             b: "#0c35b0",
             c: "#f82750",
@@ -54,7 +55,7 @@ $(document).ready(() => {
         const config = JSON.parse(configStr) as OritatamiConfig;
 
         let paperManager = new CanvasManager("paper", 500, 500);
-        let renderer = new Renderer1(paperManager.getPaper(), 100, new Theme({
+        let renderer = new SpaceFillRenderer(paperManager.getPaper(), 100, new Theme({
             a: "#a69dd8",
             b: "#0c35b0",
             c: "#f82750",

@@ -1,5 +1,5 @@
 /// <reference path="../typings/index.d.ts" />
-import { Filler, TriangleFiller } from "./spacefilling";
+import { Oritatami, Rule, OritatamiIterator, OritatamiConfig } from "./oritatami";
 import { Grid, Point, Seeds, ConnectionType } from "./grid";
 import "d3";
 import * as Raphael from "raphael";
@@ -15,11 +15,11 @@ class AnimationContext {
 }
 
 class RenderIterator {
-    _renderer: SpaceFillRenderer;
-    _iterator: Filler;
+    _renderer: OritatamiRenderer;
+    _iterator: OritatamiIterator;
     _candidates: Point[];
 
-    constructor(renderer: SpaceFillRenderer, iterator: Filler) {
+    constructor(renderer: OritatamiRenderer, iterator: OritatamiIterator) {
         this._renderer = renderer;
         this._iterator = iterator;
         this._candidates = null;
@@ -33,7 +33,7 @@ class RenderIterator {
                 throw new Error("Select one point from cadiates");
             }
         }
-/*        if (choice) {
+        if (choice) {
             this._iterator.next(choice);
             this._renderer.drawNode(choice, {
                 ms: NODE_ANIMATION_MS,
@@ -44,23 +44,58 @@ class RenderIterator {
                 });
         }
         this._candidates = this._iterator.predict();
-*/        return this._candidates;
+        return this._candidates;
     }
 
     isDone(): boolean {
-        return true;// this._iterator.predict() == null;
+        return this._iterator.predict() == null;
     }
 }
 
-export class SpaceFillRenderer extends Renderer {
+export class Color {
+    code: string;
+    r: number;
+    g: number;
+    b: number;
+
+    constructor(color: Color);
+    constructor(codeOrName: string);
+    constructor(r: number, g: number, b: number);
+    constructor(a1: string | number | Color, a2?: number, a3?: number) {
+        if (typeof a1 === "string") {
+            this.code = a1;
+        } else if (typeof a1 === "number") {
+            this.r = a1;
+            this.g = a2;
+            this.b = a3;
+        } else {
+            this.code = a1.code;
+            this.r = a1.r;
+            this.g = a1.g;
+            this.b = a1.b;
+        }
+    }
+
+    toString(): string {
+        if (this.code) {
+            return this.code;
+        } else {
+            return `rgb(${this.r},${this.g},${this.b})`;
+        }
+    }
+}
+
+export class OritatamiRenderer extends Renderer {
     paper: RaphaelPaper;
+    _gridSet: RaphaelSet;
     _width: number;
     _height: number;
     _grid_size: number;
     _circle_size: number;
     _grid: Grid;
     _last_point: Point;
-    _filler: Filler;
+    _oritatami: Oritatami;
+    _rule: Rule;
     _theme: Theme;
     _iterator: RenderIterator;
 
@@ -78,10 +113,16 @@ export class SpaceFillRenderer extends Renderer {
         this.drawGrid();
     }
 
+    set oritatami(v: OritatamiConfig) {
+        this._rule = new Rule(v.rule);
+        this._oritatami = new Oritatami(v.delay, this._rule);
+        this._setSeeds(v.seed);
+        this._createIterator(v.sequence);
+    }
+
     _createIterator(seq: string[]) {
-        /*        const itr = this._oritatami.push(this._grid, this._last_point, seq);
-                this._iterator = new RenderIterator(this, itr);
-                */
+        const itr = this._oritatami.push(this._grid, this._last_point, seq);
+        this._iterator = new RenderIterator(this, itr);
     }
 
     _setSeeds(seeds: Seeds) {
@@ -96,30 +137,30 @@ export class SpaceFillRenderer extends Renderer {
         }
     }
 
-    createSpaceFillHTML(config?: Filler) {
+    createOritatamiHTML(config?: OritatamiConfig) {
         let wrapper = $("#paper").empty();
         wrapper.append(this.paper.canvas);
-
         const buttonDiv = $("<div class=\"buttons\"></div>");
         wrapper.append(buttonDiv);
-
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => {
             this._iterator.next();
+            this._gridSet.toBack();
         });
         buttonDiv.append(nextButton);
-
         const autoButton = $("<button class=\"btn btn-default\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
                 this._iterator.next();
+                this._gridSet.toBack();
             }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
         buttonDiv.append(autoButton);
-
         if (config) {
-            this._filler = config;
+            this.oritatami = config;
         }
+
+        this._gridSet.toBack();
     }
 
     drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {
@@ -127,13 +168,13 @@ export class SpaceFillRenderer extends Renderer {
         this.drawCircle(point, near.c, nodeAnimation);
         const weakConnected: Point[] = [];
         for (const info of Point.directions.nearToArray(near)) {
-            /*            const rel = this._oritatami.rule.get(info[1], near.c);
-                        const absPoint = point.add(info[0]);
-                        if (absPoint === this._last_point) {
-                            continue;
-                        } else if (rel !== 0) {
-                            weakConnected.push(new Point(absPoint));
-                        }*/
+            const rel = this._oritatami.rule.get(info[1], near.c);
+            const absPoint = point.add(info[0]);
+            if (absPoint === this._last_point) {
+                continue;
+            } else if (rel !== 0) {
+                weakConnected.push(new Point(absPoint));
+            }
         }
 
         for (const connected of weakConnected) {

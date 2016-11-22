@@ -13,44 +13,6 @@ class AnimationContext {
     easing: string;
 }
 
-class RenderIterator {
-    _renderer: Renderer;
-    _iterator: OritatamiIterator;
-    _candidates: Point[];
-
-    constructor(renderer: Renderer, iterator: OritatamiIterator) {
-        this._renderer = renderer;
-        this._iterator = iterator;
-        this._candidates = null;
-    }
-
-    next(choice?: Point): Point[] {
-        if (choice == null && this._candidates != null) {
-            if (this._candidates.length === 1) {
-                choice = this._candidates[0];
-            } else {
-                throw new Error("Select one point from cadiates");
-            }
-        }
-        if (choice) {
-            this._iterator.next(choice);
-            this._renderer.drawNode(choice, {
-                ms: NODE_ANIMATION_MS,
-                easing: "elastic"
-            }, {
-                    ms: PATH_ANIMATION_MS,
-                    easing: "easeOut"
-                });
-        }
-        this._candidates = this._iterator.predict();
-        return this._candidates;
-    }
-
-    isDone(): boolean {
-        return this._iterator.predict() == null;
-    }
-}
-
 export class Color {
     code: string;
     r: number;
@@ -125,80 +87,21 @@ export class Renderer {
     _grid_size: number;
     _circle_size: number;
     _grid: Grid;
-    _last_point: Point;
-    _oritatami: Oritatami;
     _rule: Rule;
     _theme: Theme;
-    _iterator: RenderIterator;
-
-    get iterator(): RenderIterator {
-        return this._iterator;
-    }
 
     get theme(): Theme {
         return this._theme;
     }
 
-    constructor(width: number, height: number, grid_size?: number, theme?: Theme, config?: OritatamiConfig) {
-        this.paper = Raphael("paper", width, height);
+    constructor(paper: RaphaelPaper, grid_size?: number, theme?: Theme) {
+        this.paper = paper;
+        this._width = paper.width;
+        this._height = paper.height;
         this._grid_size = grid_size ? grid_size : 100;
         this._circle_size = 10;
         this._grid = new Grid();
-        this._width = width;
-        this._height = height;
         this._theme = theme ? theme : new Theme();
-
-        this.drawGrid();
-    }
-
-    set oritatami(v: OritatamiConfig) {
-        this._rule = new Rule(v.rule);
-        this._oritatami = new Oritatami(v.delay, this._rule);
-        this._setSeeds(v.seed);
-        this._createIterator(v.sequence);
-    }
-
-    _createIterator(seq: string[]) {
-        const itr = this._oritatami.push(this._grid, this._last_point, seq);
-        this._iterator = new RenderIterator(this, itr);
-    }
-
-    _setSeeds(seeds: Seeds) {
-        let prevPoint: Point = null;
-        for (const seed of seeds) {
-            const curPoint = new Point(seed[0], seed[1]);
-            if (!this._grid.put(curPoint, seed[2])) {
-                throw new Error("Invalid seed!");
-            }
-            this.drawNode(curPoint);
-            prevPoint = curPoint;
-        }
-    }
-
-    createOritatamiHTML(config?: OritatamiConfig) {
-        let wrapper = $("#paper").empty();
-        wrapper.append(this.paper.canvas);
-        const buttonDiv = $("<div class=\"buttons\"></div>");
-        wrapper.append(buttonDiv);
-        const nextButton = $("<button class=\"btn btn-default\">next</button>");
-        nextButton.click(() => {
-            this._iterator.next();
-            this._gridSet.toBack();
-        });
-        buttonDiv.append(nextButton);
-        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
-        autoButton.click(() => {
-            setInterval(() => {
-                this._iterator.next();
-                this._gridSet.toBack();
-            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
-        });
-        buttonDiv.append(autoButton);
-        if (config) {
-            this.oritatami = config;
-        }
-
-        this._gridSet.toBack();
     }
 
     drawGrid() {
@@ -206,6 +109,7 @@ export class Renderer {
         const color: string = "CCC";
 
         this.paper.setStart();
+
         for (let i = -size; i < size; ++i) {
             // X axis
             let point = new Point(i, -size);
@@ -227,29 +131,6 @@ export class Renderer {
         }
 
         this._gridSet = this.paper.setFinish();
-    }
-
-    drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {
-        const near = this._grid.getNear(point);
-        this.drawCircle(point, near.c, nodeAnimation);
-        const weakConnected: Point[] = [];
-        for (const info of Point.directions.nearToArray(near)) {
-            const rel = this._oritatami.rule.get(info[1], near.c);
-            const absPoint = point.add(info[0]);
-            if (absPoint === this._last_point) {
-                continue;
-            } else if (rel !== 0) {
-                weakConnected.push(new Point(absPoint));
-            }
-        }
-
-        for (const connected of weakConnected) {
-            this.drawConnection(connected, point, ConnectionType.weak, pathAnimation);
-        }
-        if (this._last_point) {
-            this.drawConnection(this._last_point, point, ConnectionType.strong, pathAnimation);
-        }
-        this._last_point = new Point(point);
     }
 
     drawCircle(p: Point, text: string, animation?: AnimationContext) {
@@ -278,12 +159,10 @@ export class Renderer {
         const attr = {
             "stroke-dasharray": type === ConnectionType.strong ? "" : "- "
         };
+
         if (color) {
             attr["stroke"] = "#" + color;
-            console.log(color);
         }
-
-        console.log(attr);
 
         if (animation) {
 

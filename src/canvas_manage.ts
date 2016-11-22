@@ -30,14 +30,15 @@ export class CanvasManager {
         this.paper = Raphael(this.canvasID, this.width, this.height);
 
         const self = this;
-        window.onmousewheel = function (e) { self.wheel(e); };
-        document.onmousewheel = function (e) { self.wheel(e); };
 
         let startX: number = 0;
         let startY: number = 0;
 
         //Pan
         const paperElement = $("#" + this.canvasID);
+        const svgEl = paperElement.children("svg")[0];
+        svgEl.addEventListener("mousewheel", function (e) { self.wheel(e) });
+        svgEl.addEventListener("DOMMouseScroll", function (e) { self.wheel(e) });
         paperElement.mousedown(function (e) {
             if (self.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
                 return;

@@ -9,8 +9,6 @@ export class CanvasManager {
     canvasID: string;
     dX: number = 0;
     dY: number = 0;
-    oX: number = 0;
-    oY: number = 0;
 
     x: number = 0;
     y: number = 0;
@@ -81,6 +79,14 @@ export class CanvasManager {
 
     getZoom(): number {
         return this.zoom;
+    }
+
+    getX(): number {
+        return this.x;
+    }
+
+    getY(): number {
+        return this.y;
     }
 
     /** This is high-level function.

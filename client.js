@@ -27485,7 +27485,7 @@
 	        this.paper = paper;
 	        this._width = this.paper.width;
 	        this._height = this.paper.height;
-	        this._grid_size = grid_size ? grid_size : 100;
+	        this._grid_size = grid_size ? grid_size : 20;
 	        this._circle_size = 10;
 	        this._grid = new grid_1.Grid();
 	        this._theme = theme ? theme : new Theme1();
@@ -27535,7 +27535,7 @@
 	        }
 	    }
 	    drawGrid() {
-	        const size = 100;
+	        const size = 20;
 	        for (let i = -size; i < size; ++i) {
 	            // X axis
 	            let point = new grid_1.Point(i, -size);
@@ -27638,12 +27638,13 @@
 	        this.height = height;
 	        this.paper = Raphael(this.canvasID, this.width, this.height);
 	        const self = this;
-	        window.onmousewheel = function (e) { self.wheel(e); };
-	        document.onmousewheel = function (e) { self.wheel(e); };
 	        let startX = 0;
 	        let startY = 0;
 	        //Pan
 	        const paperElement = $("#" + this.canvasID);
+	        const svgEl = paperElement.children("svg")[0];
+	        svgEl.addEventListener("mousewheel", function (e) { self.wheel(e); });
+	        svgEl.addEventListener("DOMMouseScroll", function (e) { self.wheel(e); });
 	        paperElement.mousedown(function (e) {
 	            if (self.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
 	                return;

@@ -152,4 +152,10 @@ export class CanvasManager {
 
         return [retX, retY];
     }
+
+    getNearestPoint(x: number, y: number, range?: number): Point {
+        let pt = new Point();
+
+        return pt;
+    }
 }

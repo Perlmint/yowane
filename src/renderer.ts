@@ -137,7 +137,7 @@ export class Renderer {
     }
 
     drawCircle(p: Point, text: string, animation?: AnimationContext) {
-        const [x, y] = this._getScreenCoord(p);
+        const [x, y] = this.canvas.getScreenCoord(p);
         const attr = {
             fill: "white",
             "stroke": this._theme.get(text),
@@ -156,7 +156,7 @@ export class Renderer {
     }
 
     drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext, color?: string) {
-        const screenCoord = [this._getScreenCoord(p1), this._getScreenCoord(p2)];
+        const screenCoord = [this.canvas.getScreenCoord(p1), this.canvas.getScreenCoord(p2)];
         const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
 
         const attr = {
@@ -182,15 +182,5 @@ export class Renderer {
 
     _drawPath(path: string) {
         return this.paper.path(path);
-    }
-
-    _getScreenCoord(p: Point): [number, number] {
-        let tempX = p.x + Math.cos(Math.PI / 3) * p.y;
-        let tempY = Math.sin(Math.PI / 3) * p.y;
-
-        let retX = Math.round(this._grid_size * (1 + tempX));
-        let retY = Math.round(this._height - this._grid_size * (1 + tempY));
-
-        return [retX, retY];
     }
 }

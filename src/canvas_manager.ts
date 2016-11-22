@@ -1,4 +1,5 @@
 import * as Raphael from "raphael";
+import { Point } from "./grid";
 
 export class CanvasManager {
     // From this StackOverflow question:
@@ -143,5 +144,15 @@ export class CanvasManager {
             event.preventDefault();
         }
         event.returnValue = false;
+    }
+
+    getScreenCoord(p: Point): [number, number] {
+        let tempX = p.x + Math.cos(Math.PI / 3) * p.y;
+        let tempY = Math.sin(Math.PI / 3) * p.y;
+
+        let retX = Math.round(this.gridSize * (1 + tempX));
+        let retY = Math.round(this.paper.height - this.gridSize * (1 + tempY));
+
+        return [retX, retY];
     }
 }

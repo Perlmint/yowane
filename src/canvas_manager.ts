@@ -53,15 +53,12 @@ export class CanvasManager {
         });
 
         paperElement.mousemove(function (e) {
-            if (self.mouseDown === false) { return; }
-            self.dX = startX - e.pageX;
-            self.dY = startY - e.pageY;
+            if (self.mouseDown === false) {
+                return;
+            }
 
-            const x = self.width / self.paper.width;
-            const y = self.height / self.paper.height;
-
-            self.dX *= x;
-            self.dY *= y;
+            self.dX = (startX - e.pageX) * self.zoom;
+            self.dY = (startY - e.pageY) * self.zoom;
 
             self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
         });

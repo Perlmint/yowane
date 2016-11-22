@@ -37,37 +37,39 @@ export class CanvasManager {
         let startY: number = 0;
 
         //Pan
-        const paperElement = $($(this.canvasID).children("svg")[0]);
+        const paperElement = $("#" + this.canvasID);
         paperElement.mousedown(function (e) {
-            if (this.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
+            if (self.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
                 return;
             }
 
-            this.mousedown = true;
+            self.mouseDown = true;
             startX = e.pageX;
             startY = e.pageY;
         });
 
         paperElement.mousemove(function (e) {
-            if (this.mousedown === false) { return; }
-            this.dX = startX - e.pageX;
-            this.dY = startY - e.pageY;
-            const x = this.width / this.paper.width;
-            const y = this.height / this.paper.height;
-            this.dX *= x;
-            this.dY *= y;
-            //alert(viewBoxWidth +" "+ paper.width );
-            this.paper.setViewBox(this.x + this.x, this.y + this.dY, this.width, this.height);
+            if (self.mouseDown === false) { return; }
+            self.dX = startX - e.pageX;
+            self.dY = startY - e.pageY;
+
+            const x = self.width / self.paper.width;
+            const y = self.height / self.paper.height;
+
+            self.dX *= x;
+            self.dY *= y;
+
+            self.paper.setViewBox(self.x + self.x, self.y + self.dY, self.width, self.height, true);
         });
 
         paperElement.mouseup(function (e) {
-            if (this.mousedown === false) {
+            if (self.mouseDown === false) {
                 return;
             }
 
-            this.x += this.dX;
-            this.y += this.dY;
-            this.mousedown = false;
+            self.x += self.dX;
+            self.y += self.dY;
+            self.mouseDown = false;
         });
     }
 

@@ -27533,6 +27533,7 @@
 
 	"use strict";
 	const Raphael = __webpack_require__(10);
+	const grid_1 = __webpack_require__(3);
 	class CanvasManager {
 	    constructor(canvasID, width, height, gridSize) {
 	        this.dX = 0;
@@ -27571,12 +27572,8 @@
 	            if (self.mouseDown === false) {
 	                return;
 	            }
-	            self.dX = startX - e.pageX;
-	            self.dY = startY - e.pageY;
-	            const x = self.width / self.paper.width;
-	            const y = self.height / self.paper.height;
-	            self.dX *= x;
-	            self.dY *= y;
+	            self.dX = (startX - e.pageX) * self.zoom;
+	            self.dY = (startY - e.pageY) * self.zoom;
 	            self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
 	        });
 	        paperElement.mouseup(function (e) {
@@ -27656,6 +27653,10 @@
 	        let retX = Math.round(this.gridSize * (1 + tempX));
 	        let retY = Math.round(this.paper.height - this.gridSize * (1 + tempY));
 	        return [retX, retY];
+	    }
+	    getNearestPoint(x, y, range) {
+	        let pt = new grid_1.Point();
+	        return pt;
 	    }
 	}
 	exports.CanvasManager = CanvasManager;

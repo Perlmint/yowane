@@ -119,6 +119,7 @@ export class Theme {
 
 export class Renderer {
     paper: RaphaelPaper;
+    _gridSet: RaphaelSet;
     _width: number;
     _height: number;
     _grid_size: number;
@@ -147,7 +148,7 @@ export class Renderer {
         this._height = height;
         this._theme = theme ? theme : new Theme();
 
-        this.createOritatamiHTML(config);
+        this.drawGrid();
     }
 
     set oritatami(v: OritatamiConfig) {
@@ -182,18 +183,50 @@ export class Renderer {
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => {
             this._iterator.next();
+            this._gridSet.toBack();
         });
         buttonDiv.append(nextButton);
         const autoButton = $("<button class=\"btn btn-default\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
                 this._iterator.next();
+                this._gridSet.toBack();
             }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
         buttonDiv.append(autoButton);
         if (config) {
             this.oritatami = config;
         }
+
+        this._gridSet.toBack();
+    }
+
+    drawGrid() {
+        const size: number = 20;
+        const color: string = "CCC";
+
+        this.paper.setStart();
+        for (let i = -size; i < size; ++i) {
+            // X axis
+            let point = new Point(i, -size);
+            let nextPoint = new Point(i, size);
+
+            this.drawConnection(point, nextPoint, ConnectionType.weak, null, color);
+
+            // Y axis
+            point = new Point(-size, i);
+            nextPoint = new Point(size, i);
+
+            this.drawConnection(point, nextPoint, ConnectionType.weak, null, color);
+
+            // XY axis(?)
+            point = new Point(i + size, -size);
+            nextPoint = new Point(i - size, size);
+
+            this.drawConnection(point, nextPoint, ConnectionType.weak, null, color);
+        }
+
+        this._gridSet = this.paper.setFinish();
     }
 
     drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {
@@ -238,17 +271,29 @@ export class Renderer {
         }
     }
 
-    drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext) {
+    drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext, color?: string) {
         const screenCoord = [this._getScreenCoord(p1), this._getScreenCoord(p2)];
         const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
+
+        const attr = {
+            "stroke-dasharray": type === ConnectionType.strong ? "" : "- "
+        };
+        if (color) {
+            attr["stroke"] = "#" + color;
+            console.log(color);
+        }
+
+        console.log(attr);
+
         if (animation) {
+
             this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
-                .attr("stroke-dasharray", type === ConnectionType.strong ? "" : "- ")
+                .attr(attr)
                 .toBack()
                 .animate({ path: pathStr }, animation.ms, animation.easing);
         } else {
             this._drawPath(pathStr)
-                .attr("stroke-dasharray", type === ConnectionType.strong ? "" : "- ")
+                .attr(attr)
                 .toBack();
         }
     }

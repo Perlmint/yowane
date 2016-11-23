@@ -84,6 +84,24 @@ $(document).ready(() => {
             z: "#3db35a"
         }));
 
+        const paperElement = $("#paper");
+
+        paperElement.mousemove(function (e) {
+            let x = e.offsetX;
+            let y = e.offsetY;
+
+            console.log(x + ", " + y);
+            let pt = paperManager.getNearestPoint(x, y);
+            console.log(pt);
+            renderer.drawCircle(pt, "z");
+        });
+
+        let pt = paperManager.getNearestPoint(0, 0);
+        pt.x = 0;
+        pt.y = 0;
+
+        renderer.drawCircle(pt, "y");
+
         //        renderer.oritatami = config;
         renderer.createSpaceFillHTML();
 

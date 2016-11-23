@@ -114,7 +114,7 @@ export class CanvasManager {
     /** Event handler for mouse wheel event.
      */
     wheel(event) {
-        var delta = 0;
+        let delta = 0;
         if (!event) { /* For IE. */
             event = window.event;
         }

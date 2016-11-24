@@ -18,10 +18,13 @@ export class SpaceFillInputManager {
         this._onClick = onClickHandler;
 
         $(paperElement).mousemove((e) => {
-            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
+            const pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
 
             this.mousemove(pt);
-            this._renderer.drawMouseMove().click((e) => this.onClick(e));
+            const target = this._renderer.drawMouseMove();
+            if (target) {
+                target.click((e) => this.onClick(e));
+            }
         });
     }
 

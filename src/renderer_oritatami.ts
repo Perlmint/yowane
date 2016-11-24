@@ -145,7 +145,7 @@ export class OritatamiRenderer extends Renderer {
         const weakConnected: Point[] = [];
         for (const info of Point.directions.nearToArray(near)) {
             const rel = this._oritatami.rule.get(info[1], near.c);
-            const absPoint = point.add(info[0]);
+            const absPoint = Point.added(point, info[0]);
             if (absPoint === this._last_point) {
                 continue;
             } else if (rel !== 0) {

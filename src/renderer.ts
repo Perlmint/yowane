@@ -136,13 +136,15 @@ export class Renderer {
         this._gridSet = this.paper.setFinish();
     }
 
-    drawCircle(p: Point, text: string, animation?: AnimationContext) {
+    drawCircle(p: Point, text: string, animation?: AnimationContext): RaphaelSet {
         const [x, y] = this.canvas.getScreenCoord(p);
         const attr = {
             fill: "white",
             "stroke": this._theme.get(text),
             "stroke-width": 3,
         };
+
+        this.paper.setStart();
         if (animation) {
             this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
             this.paper.text(x, y, text).attr({
@@ -153,6 +155,8 @@ export class Renderer {
             this.paper.circle(x, y, this._circle_size).attr(attr);
             this.paper.text(x, y, text).attr("font-size", 15);
         }
+
+        return this.paper.setFinish();
     }
 
     drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext, color?: string) {

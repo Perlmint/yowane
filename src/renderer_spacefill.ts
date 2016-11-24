@@ -25,7 +25,6 @@ export class SpaceFillRenderer extends Renderer {
             showInputDiv.html(this.input.sequenceToString());
         });
 
-        this.drawGrid();
         this.input.initialClick();
     }
 

@@ -16,7 +16,9 @@ export class SpaceFillInputManager {
         this._renderer = renderer;
 
         $(paperElement).mousemove((e) => {
-            this.mousemove(e.offsetX, e.offsetY);
+            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
+
+            this.mousemove(pt);
             this._renderer.drawMouseMove();
         });
 
@@ -26,13 +28,18 @@ export class SpaceFillInputManager {
                 return;
             }
 
-            this.click(e.offsetX, e.offsetY);
+            this.click(this.hoverPt);
             this._renderer.drawClick();
         });
     }
 
-    mousemove(x: number, y: number) {
-        let pt = this._renderer.canvas.getNearestCoord(x, y);
+    initialClick() {
+        let pt = new Point(0, 0);
+        this.click(pt);
+        this._renderer.drawClick();
+    }
+
+    mousemove(pt: Point) {
         pt.x = Math.round(pt.x);
         pt.y = Math.round(pt.y);
 
@@ -59,26 +66,23 @@ export class SpaceFillInputManager {
         this.hoverPt = pt;
     }
 
-    click(x: number, y: number) {
-        if (this.hoverPt) {
-            this.sequence.push(this.hoverPt);
+    click(pt: Point) {
+        this.hoverPt = null;
+        this.sequence.push(pt);
 
-            this.hoverPt = null;
+        if (1 < this.sequence.length) {
+            let prev1 = this.sequence[this.sequence.length - 1];
+            let prev2 = this.sequence[this.sequence.length - 2];
 
-            if (1 < this.sequence.length) {
-                let prev1 = this.sequence[this.sequence.length - 1];
-                let prev2 = this.sequence[this.sequence.length - 2];
+            let diff = new Point(prev1.x - prev2.x, prev1.y - prev2.y);
 
-                let diff = new Point(prev1.x - prev2.x, prev1.y - prev2.y);
+            let dirList = Point.directions.toArray();
 
-                let dirList = Point.directions.toArray();
+            for (let i = 0; i < dirList.length; ++i) {
+                let dir = dirList[i];
 
-                for (let i = 0; i < dirList.length; ++i) {
-                    let dir = dirList[i];
-
-                    if (dir.x === diff.x && dir.y === diff.y) {
-                        this.sequenceAsDelta.push(i);
-                    }
+                if (dir.x === diff.x && dir.y === diff.y) {
+                    this.sequenceAsDelta.push(i);
                 }
             }
         }

@@ -21,6 +21,7 @@ export class SpaceFillRenderer extends Renderer {
         this._input = new SpaceFillInputManager(canvas.paperElement, this);
 
         this.drawGrid();
+        this._input.initialClick();
     }
 
     createSpaceFillHTML(config?: Filler) {

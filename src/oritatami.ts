@@ -72,7 +72,7 @@ export interface OritatamiIterator {
 
 export interface OritatamiConfig {
     delay: number;
-    rule: RuleConfig;
+    rule: RuleConfig | Rule;
     seed: Seeds;
     sequence: string[];
 }
@@ -84,7 +84,14 @@ export class Oritatami {
     static _pathSet: {[key: number]: (number[])[]} = {};
 
     static run(config: OritatamiConfig) {
-        const oritatami = new Oritatami(config.delay, new Rule(config.rule));
+        let rule: Rule;
+        if (Array.isArray(config.rule)) {
+            rule = new Rule(config.rule);
+        }
+        else {
+            rule = config.rule;
+        }
+        const oritatami = new Oritatami(config.delay, rule);
         const grid = new Grid(config.seed);
         const lastSeed = config.seed[config.seed.length - 1];
         return oritatami.push(grid, new Point(lastSeed[0], lastSeed[1]), config.sequence);

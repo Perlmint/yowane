@@ -15,7 +15,7 @@ class AnimationContext {
     easing: string;
 }
 
-class RenderIterator {
+export class RenderIterator {
     _renderer: OritatamiRenderer;
     _iterator: OritatamiIterator;
     _candidates: Point[];
@@ -67,6 +67,8 @@ export class OritatamiRenderer extends Renderer {
     _theme: Theme;
     _iterator: RenderIterator;
 
+    onNext: () => void;
+
     get iterator(): RenderIterator {
         return this._iterator;
     }
@@ -77,16 +79,24 @@ export class OritatamiRenderer extends Renderer {
 
     constructor(canvas: CanvasManager, theme?: Theme) {
         super(canvas, theme);
+        this.onNext = () => {
+            this._iterator.next();
+            this._gridToBack();
+        };
     }
 
     set oritatami(v: OritatamiConfig) {
-        this._rule = new Rule(v.rule);
+        if (Array.isArray(v.rule)) {
+            this._rule = new Rule(v.rule);
+        } else {
+            this._rule = v.rule;
+        }
         this._oritatami = new Oritatami(v.delay, this._rule);
         this._setSeeds(v.seed);
-        this._createIterator(v.sequence);
+        this.createIterator(v.sequence);
     }
 
-    _createIterator(seq: string[]) {
+    createIterator(seq: string[]) {
         const itr = this._oritatami.push(this._grid, this._last_point, seq);
         this._iterator = new RenderIterator(this, itr);
     }
@@ -109,16 +119,12 @@ export class OritatamiRenderer extends Renderer {
         const buttonDiv = $("<div class=\"buttons\"></div>");
         wrapper.append(buttonDiv);
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
-        nextButton.click(() => {
-            this._iterator.next();
-            this._gridToBack();
-        });
+        nextButton.click(() => this.onNext());
         buttonDiv.append(nextButton);
         const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
-                this._iterator.next();
-                this._gridToBack();
+                this.onNext();
             }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
         buttonDiv.append(autoButton);

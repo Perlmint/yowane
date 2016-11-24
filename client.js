@@ -27627,10 +27627,10 @@
 	        let oldWidth = this.width;
 	        let oldHeight = this.height;
 	        if (delta < 0) {
-	            this.zoom *= 0.95;
+	            this.zoom -= 0.05;
 	        }
 	        else {
-	            this.zoom *= 1.05;
+	            this.zoom += 0.05;
 	        }
 	        this.width = this.paper.width * this.zoom;
 	        this.height = this.paper.height * this.zoom;
@@ -27641,7 +27641,7 @@
 	    /** Event handler for mouse wheel event.
 	     */
 	    wheel(event) {
-	        var delta = 0;
+	        let delta = 0;
 	        if (!event) {
 	            event = window.event;
 	        }
@@ -27678,6 +27678,8 @@
 	        return [retX, retY];
 	    }
 	    getNearestPoint(x, y, range) {
+	        x = x + this.x;
+	        y = y + this.y;
 	        let pt = new grid_1.Point();
 	        pt.y = ((this.paper.height - y) / this.gridSize - 1) / Math.sin(Math.PI / 3);
 	        pt.x = x / this.gridSize - Math.cos(Math.PI / 3) * pt.y - 1;

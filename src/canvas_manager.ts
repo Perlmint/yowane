@@ -98,9 +98,9 @@ export class CanvasManager {
         let oldHeight = this.height;
 
         if (delta < 0) {
-            this.zoom *= 0.95;
+            this.zoom -= 0.05;
         } else {
-            this.zoom *= 1.05;
+            this.zoom += 0.05;
         }
 
         this.width = this.paper.width * this.zoom;

@@ -1,7 +1,7 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require("path");
 
-module.exports = {
+const oritatami = {
   entry: [
     "./src/client.ts"
   ],
@@ -39,3 +39,24 @@ module.exports = {
     ])
   ]
 };
+
+const spacefill = {
+  entry: [
+    "./src/spacefill_entry.ts"
+  ],
+  output: {
+    path: path.resolve("./out"),
+    publicPath: "/static",
+    filename: "spacefill_entry.js"
+  },
+  resolve: {
+    extensions: ["", ".ts"]
+  },
+  module: {
+    loaders: [
+      { test: /\.tsx?$/, exclude: /^\.#/, loader: 'ts' }
+    ]
+  }
+};
+
+module.exports = [oritatami, spacefill];

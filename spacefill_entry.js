@@ -16876,6 +16876,7 @@
 	        }
 	        if (this.input.hoverPt) {
 	            this._hover = this.drawCircle(this.input.hoverPt, "z");
+	            return this._hover;
 	        }
 	    }
 	    drawClick() {
@@ -16911,20 +16912,7 @@
 	        $(paperElement).mousemove((e) => {
 	            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
 	            this.mousemove(pt);
-	            this._renderer.drawMouseMove();
-	        });
-	        $(paperElement).mousedown((e) => {
-	            // Left button only
-	            if (e.which !== 1) {
-	                return;
-	            }
-	            if (this.hoverPt != null) {
-	                this.click(this.hoverPt);
-	                this._renderer.drawClick();
-	            }
-	            if (this._onClick) {
-	                this._onClick();
-	            }
+	            this._renderer.drawMouseMove().click((e) => this.onClick(e));
 	        });
 	    }
 	    initialClick() {
@@ -16952,6 +16940,19 @@
 	            }
 	        }
 	        this.hoverPt = pt;
+	    }
+	    onClick(e) {
+	        // Left button only
+	        if (e.which !== 1) {
+	            return;
+	        }
+	        if (this.hoverPt != null) {
+	            this.click(this.hoverPt);
+	            this._renderer.drawClick();
+	        }
+	        if (this._onClick) {
+	            this._onClick();
+	        }
 	    }
 	    click(pt) {
 	        this.hoverPt = null;

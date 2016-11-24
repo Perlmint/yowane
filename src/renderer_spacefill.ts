@@ -3,6 +3,7 @@ import { Filler, TriangleFiller } from "./spacefilling";
 import { SpaceFillInputManager } from "./spacefill_input_manager";
 import { Grid, Point, Seeds, ConnectionType } from "./grid";
 import { CanvasManager } from "./canvas_manager";
+import { Oritatami, OritatamiIterator } from "./oritatami";
 import "d3";
 import * as Raphael from "raphael";
 import * as $ from "jquery";
@@ -45,13 +46,96 @@ export class SpaceFillRenderer extends Renderer {
     }
 
     onInputEnded() {
-        // input end!
-        alert("End!");
         this.input.hoverEnabled = false;
 
+        if (this._hover) {
+            this._hover.remove();
+            this._hover = null;
+        }
+
+        const filler = TriangleFiller;
+        const seqs = filler.predictSequences(this.input.sequenceAsDelta);
+        // const seqs = filler.predictSequences("3331452145213542145151333234".split("").map(v => parseInt(v)));
+        const oritatami = new Oritatami(filler.delay, filler.rule);
+        const grid = new Grid();
+
+        filler.initGrid(grid);
+
+        let idx = 0;
+        let itr = oritatami.push(grid, new Point(0, 0), seqs[0]); // first block
+        let lp = new Point(0, 0);
+
+        function run(iterator: OritatamiIterator, seq: string[]) {
+            let innerIdx = 0;
+            let lastPoint = lp;
+            do {
+                const predicted = iterator.predict();
+                if (predicted === null) {
+                    break;
+                }
+                let nextPoint: Point;
+                if (innerIdx === 0) {
+                    const near = grid.getNear(lastPoint);
+                    let nearIdx = 0;
+                    for (const p of [near.l, near.lu, near.u, near.r, near.rd, near.d]) {
+                        if (p === "c03") {
+                            if (seq[innerIdx][0] === "5") {
+                                nextPoint = Point.directions.toArray()[(nearIdx + 1) % 6];
+                            } else {
+                                nextPoint = Point.directions.toArray()[(nearIdx + 3) % 6];
+                            }
+                            nextPoint = Point.added(lastPoint, nextPoint);
+                            break;
+                        }
+                        nearIdx++;
+                    }
+                }
+                else if (seq[innerIdx] === "513") {
+                    const near = grid.getNear(lastPoint);
+                    let nearIdx = 0;
+                    for (const p of [near.l, near.lu, near.u, near.r, near.rd, near.d, near.c]) {
+                        if (p === "511") {
+                            nextPoint = Point.directions.toArray()[(nearIdx + 3) % 6];
+                            nextPoint = Point.added(lastPoint, nextPoint);
+                            break;
+                        }
+                        nearIdx++;
+                    }
+                }
+                else {
+                    console.assert(predicted.length === 1, `non deterministic or no result ${idx} ${iterator.seq[innerIdx]}, ${predicted}`);
+                    nextPoint = predicted[0];
+                }
+                iterator.next(nextPoint);
+                lastPoint = new Point(nextPoint);
+                idx++;
+                innerIdx++;
+            } while (true);
+            return lastPoint;
+        }
+
+        // Run
+        let predictList: Point[] = [];
+
+        lp = run(itr, seqs[0]);
+        predictList.push(lp);
+
+        for (const blockSeq of seqs.slice(1)) {
+            lp = run(oritatami.push(grid, lp, blockSeq), blockSeq);
+            predictList.push(lp);
+        }
+
+        // Draw
+        for (let pt of predictList) {
+            this.drawCircle(pt, "f");
+        }
     }
 
     drawMouseMove() {
+        if (this.input.hoverEnabled === false) {
+            return;
+        }
+
         if (this._hover) {
             this._hover.remove();
         }

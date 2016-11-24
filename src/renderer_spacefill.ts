@@ -15,6 +15,7 @@ export class SpaceFillRenderer extends Renderer {
     _filler: Filler;
     _hover: RaphaelSet;
     _input: SpaceFillInputManager;
+    onClick: () => void;
 
     constructor(canvas: CanvasManager, theme?: Theme) {
         super(canvas, theme);

@@ -32,6 +32,10 @@ export class SpaceFillInputManager {
                 this.click(this.hoverPt);
                 this._renderer.drawClick();
             }
+
+            if (this._renderer.onClick) {
+                this._renderer.onClick();
+            }
         });
     }
 

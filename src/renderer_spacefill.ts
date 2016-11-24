@@ -32,7 +32,7 @@ export class SpaceFillRenderer extends Renderer {
         }
     }
 
-    drawMouseMove(x: number, y: number) {
+    drawMouseMove() {
         if (this._hover) {
             this._hover.remove();
         }
@@ -42,7 +42,7 @@ export class SpaceFillRenderer extends Renderer {
         }
     }
 
-    drawClick(x: number, y: number) {
+    drawClick() {
         if (this._hover) {
             this._hover.remove();
             this._hover = null;

@@ -17,7 +17,7 @@ export class SpaceFillInputManager {
 
         $(paperElement).mousemove((e) => {
             this.mousemove(e.offsetX, e.offsetY);
-            this._renderer.drawMouseMove(e.offsetX, e.offsetY);
+            this._renderer.drawMouseMove();
         });
 
         $(paperElement).mousedown((e) => {
@@ -27,7 +27,7 @@ export class SpaceFillInputManager {
             }
 
             this.click(e.offsetX, e.offsetY);
-            this._renderer.drawClick(e.offsetX, e.offsetY);
+            this._renderer.drawClick();
         });
     }
 

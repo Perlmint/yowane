@@ -23,8 +23,6 @@ export class CanvasManager {
     width: number = 0;
     height: number = 0;
     zoom: number = 1;
-    _onZoom: ((prev: number, current: number) => void)[];
-    _onScroll: ((dx: number, dy: number) => void)[];
 
     mouseDown: boolean = false;
 
@@ -37,8 +35,6 @@ export class CanvasManager {
         this.gridSize = gridSize;
         this.width = width;
         this.height = height;
-        this._onZoom = [];
-        this._onScroll = [];
 
         this.paper = Raphael(this.canvasID, this.width, this.height);
 
@@ -75,9 +71,6 @@ export class CanvasManager {
             self.dY = (startY - e.pageY) * self.zoom;
 
             self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
-            for (const handler of self._onScroll) {
-                handler(self.x + self.dX, self.y + self.dY);
-            }
         });
 
         this.paperElement.mouseup(function (e) {
@@ -124,7 +117,6 @@ export class CanvasManager {
     handle(delta) {
         let oldWidth = this.width;
         let oldHeight = this.height;
-        const oldZoom = this.zoom;
 
         if (delta < 0) {
             this.zoom -= ZOOM_SPEED;
@@ -144,9 +136,6 @@ export class CanvasManager {
         this.x -= (this.width - oldWidth) / 2;
         this.y -= (this.height - oldHeight) / 2;
         this.paper.setViewBox(this.x, this.y, this.width, this.height, true);
-        for (const handler of this._onZoom) {
-            handler(oldZoom, this.zoom);
-        }
     }
 
     /** Event handler for mouse wheel event.
@@ -200,13 +189,5 @@ export class CanvasManager {
         pt.x = x / this.gridSize - Math.cos(Math.PI / 3) * pt.y - 1;
 
         return pt;
-    }
-
-    onZoom(handler: (prev: number, cur: number) => void) {
-        this._onZoom.push(handler);
-    }
-
-    onScroll(handler: (dx: number, dy: number) => void) {
-        this._onScroll.push(handler);
     }
 }

@@ -61,8 +61,6 @@ export class SpaceFillRenderer extends Renderer {
 
         this._removeHover();
 
-        this.canvas.paper.remove();
-        $("#paper").remove();
         const filler = TriangleFiller;
         const fillSeqs = filler.predictSequences(this.input.relativeDirections);
         const canvas = new CanvasManager(this._oritatamiCanvasName, 500, 500, 100)

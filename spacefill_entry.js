@@ -16841,6 +16841,7 @@
 	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this, () => {
 	            showInputDiv.html(this.input.sequenceToString());
 	        });
+	        this.drawEndButton();
 	        this.drawGrid();
 	        this.input.initialClick();
 	    }
@@ -16850,6 +16851,24 @@
 	        if (config) {
 	            this._filler = config;
 	        }
+	    }
+	    drawEndButton() {
+	        this._button = this.paper.set()
+	            .push(this.paper.rect(2, 2, 100, 20, 1).toFront().attr({ fill: "red", stroke: "red 1px", opacity: 0.5 }))
+	            .push(this.paper.text(52, 12, "INPUT END"))
+	            .mouseover(() => {
+	            this._buttonGlow = this._button.glow({
+	                width: 5, fill: true, opacity: 0.7
+	            });
+	        }).mouseout(() => {
+	            if (this._buttonGlow) {
+	                this._buttonGlow.remove();
+	            }
+	        }).click(() => this.onInputEnded());
+	    }
+	    onInputEnded() {
+	        // input end!
+	        alert("End!");
 	    }
 	    drawMouseMove() {
 	        if (this._hover) {

@@ -103,7 +103,8 @@ export class SpaceFillInputManager {
                         const relativeDirection = i - lastDirection + 3;
                         this.relativeDirections.push(relativeDirection < 0 ? relativeDirection + 6 : relativeDirection);
                     } else {
-                        this.relativeDirections.push(i);
+                        // start direction is 1 regardless of input
+                        this.relativeDirections.push(1);
                     }
                 }
             }

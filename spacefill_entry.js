@@ -59,7 +59,7 @@
 	const grid_1 = __webpack_require__(3);
 	const $ = __webpack_require__(6);
 	// Space filling
-	$("#spacefill-submit").click(() => {
+	$(document).ready(() => {
 	    const configStr = $("#spacefill-input").val();
 	    const config = JSON.parse(configStr);
 	    let paperManager = new canvas_manager_1.CanvasManager("paper", 500, 500, 100);

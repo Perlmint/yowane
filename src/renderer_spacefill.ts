@@ -58,7 +58,6 @@ export class SpaceFillRenderer extends Renderer {
     }
 
     onInputEnded() {
-        this.input.hoverEnabled = false;
         this._endButton.attr("disabled", "disabled");
         this.done = true;
 
@@ -145,7 +144,7 @@ export class SpaceFillRenderer extends Renderer {
     }
 
     drawMouseMove() {
-        if (this.input.hoverEnabled === false) {
+        if (this.done === true) {
             return;
         }
 

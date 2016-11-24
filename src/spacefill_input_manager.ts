@@ -8,7 +8,6 @@ export class SpaceFillInputManager {
     relativeDirections: number[] = [];
 
     hoverPt: Point;
-    hoverEnabled: boolean;
 
     _onClick: () => void;
     _paperElement: JQuery;
@@ -18,7 +17,6 @@ export class SpaceFillInputManager {
         this._paperElement = paperElement;
         this._renderer = renderer;
         this._onClick = onClickHandler;
-        this.hoverEnabled = true;
 
         $(paperElement).mousemove((e) => {
             let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
@@ -51,7 +49,7 @@ export class SpaceFillInputManager {
     }
 
     mousemove(pt: Point) {
-        if (this.hoverEnabled === false) {
+        if (this._renderer.done === true) {
             return;
         }
 
@@ -82,6 +80,10 @@ export class SpaceFillInputManager {
     }
 
     click(pt: Point) {
+        if (this._renderer.done === true) {
+            return;
+        }
+
         this.hoverPt = null;
         this.sequence.push(pt);
 

@@ -96,7 +96,7 @@ export class SpaceFillInputManager {
         }
     }
 
-    sequenceToString(): string {        
+    sequenceToString(): string {
         const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
         const result =  `{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>

@@ -17,20 +17,13 @@ export class SpaceFillRenderer extends Renderer {
     input: SpaceFillInputManager;
     _button: RaphaelSet;
     _buttonGlow: RaphaelSet;
-    _dx: number;
-    _dy: number;
-    _scale: number;
 
     constructor(canvas: CanvasManager, theme?: Theme) {
         super(canvas, theme);
-        this._dx = this._dy = 0;
-        this._scale = 1;
         const showInputDiv = $("#input_sequence");
         this.input = new SpaceFillInputManager(canvas.paperElement, this, () => {
             showInputDiv.html(this.input.sequenceToString());
         });
-        canvas.onZoom((prev, cur) => this.onZoom(prev, cur));
-        canvas.onScroll((dx, dy) => this.onScroll(dx, dy));
 
         this.drawEndButton();
         this.drawGrid();
@@ -50,10 +43,6 @@ export class SpaceFillRenderer extends Renderer {
         this._button = this.paper.set()
         .push(this.paper.rect(2, 2, 100, 20, 1).toFront().attr({fill: "red", stroke: "red 1px", opacity: 0.5}))
         .push(this.paper.text(52, 12, "INPUT END"))
-        .attr({
-            cursor: "pointer",
-            position: "fixed"
-        })
         .mouseover(() => {
             this._buttonGlow = this._button.glow({
                 width: 5, fill: true, opacity: 0.7
@@ -63,21 +52,6 @@ export class SpaceFillRenderer extends Renderer {
                 this._buttonGlow.remove();
             }
         }).click(() => this.onInputEnded());
-    }
-
-    onZoom(prev: number, cur: number) {
-        this._scale = cur;
-        this.updateButtonTransform();
-    }
-
-    onScroll(dx: number, dy: number) {
-        this._dx = dx;
-        this._dy = dy;
-        this.updateButtonTransform();
-    }
-
-    updateButtonTransform() {
-        this._button.transform(`S${this._scale}T${this._dx},${this._dy}`);
     }
 
     onInputEnded() {
@@ -92,9 +66,6 @@ export class SpaceFillRenderer extends Renderer {
 
         if (this.input.hoverPt) {
             this._hover = this.drawCircle(this.input.hoverPt, "z");
-            this._hover.attr({
-                cursor: "pointer"
-            });
             return this._hover;
         }
     }

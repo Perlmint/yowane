@@ -17352,7 +17352,7 @@
 	                    this.absoluteDirections.push(i);
 	                    if (this.absoluteDirections.length > 1) {
 	                        const lastDirection = this.absoluteDirections[this.absoluteDirections.length - 2];
-	                        const relativeDirection = i - lastDirection + 3;
+	                        const relativeDirection = (i - lastDirection + 3) % 6;
 	                        this.relativeDirections.push(relativeDirection < 0 ? relativeDirection + 6 : relativeDirection);
 	                    }
 	                    else {

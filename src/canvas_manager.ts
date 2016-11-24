@@ -1,6 +1,10 @@
 import * as Raphael from "raphael";
 import { Point } from "./grid";
 
+const ZOOM_MAX = 5;
+const ZOOM_MIN = 0.2;
+const ZOOM_SPEED = 0.1;
+
 export class CanvasManager {
     // From this StackOverflow question:
     //    http://stackoverflow.com/a/9121092/895491
@@ -114,9 +118,15 @@ export class CanvasManager {
         let oldHeight = this.height;
 
         if (delta < 0) {
-            this.zoom -= 0.05;
+            this.zoom -= ZOOM_SPEED;
         } else {
-            this.zoom += 0.05;
+            this.zoom += ZOOM_SPEED;
+        }
+        
+        if (this.zoom < ZOOM_MIN) {
+            this.zoom = ZOOM_MIN;
+        } else if (this.zoom > ZOOM_MAX) {
+            this.zoom = ZOOM_MAX;
         }
 
         this.width = this.paper.width * this.zoom;

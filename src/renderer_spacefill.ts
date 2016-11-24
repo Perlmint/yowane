@@ -23,21 +23,6 @@ export class SpaceFillRenderer extends Renderer {
         let wrapper = $("#paper").empty();
         wrapper.append(this.paper.canvas);
 
-        const buttonDiv = $("<div class=\"buttons\"></div>");
-        wrapper.append(buttonDiv);
-
-        const nextButton = $("<button class=\"btn btn-default\">next</button>");
-        nextButton.click(() => {
-        });
-        buttonDiv.append(nextButton);
-
-        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
-        autoButton.click(() => {
-            setInterval(() => {
-            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
-        });
-        buttonDiv.append(autoButton);
-
         if (config) {
             this._filler = config;
         }

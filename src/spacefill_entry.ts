@@ -9,9 +9,6 @@ import * as $ from "jquery";
 
 // Space filling
 $(document).ready(() => {
-    const configStr = $("#spacefill-input").val();
-    const config = JSON.parse(configStr) as OritatamiConfig;
-
     let paperManager = new CanvasManager("paper", 500, 500, 100);
     let renderer = new SpaceFillRenderer(paperManager, new Theme({
         a: "#a69dd8",

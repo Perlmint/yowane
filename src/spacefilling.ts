@@ -1,4 +1,5 @@
 import { Rule } from "./oritatami";
+import { Grid, Point } from "./grid";
 
 function globalDirectionToLocalDirection(direction: number, base: number): number {
     let ret = direction - base;
@@ -18,14 +19,21 @@ function localDirectionToGlobalDirection(direction: number, globalBase: number):
 
 export class Filler {
     delay: number;
-    seed: string[];
+    seed: [string, Point][];
     rule: Rule;
     _hinges: { [key: number]: string[] };
 
-    constructor(delay: number, seed: string[], rule: Rule) {
+    constructor(delay: number, seed: [string, Point][], rule: Rule) {
         this.delay = delay;
         this.seed = seed;
         this.rule = rule;
+        this._hinges = {};
+    }
+
+    initGrid(grid: Grid) {
+        for (const seed of this.seed) {
+            grid.put(seed[1], seed[0]);
+        }
     }
 
     setHinge(to: number, seq: string[]): Filler {
@@ -89,7 +97,8 @@ const TriangleRule = new Rule()
     .add("c02", "520").add("c04", "516");
 
 export const TriangleFiller = new Filler(4,
-    ["117", "118", "119", "120", "c01", "c02", "c03", "c04"],
+    [["117", new Point(2, -2)], ["118", new Point(1, -1)], ["119", new Point(1, -2)], ["120", new Point(0, -2)],
+     ["c01", new Point(0, -1)], ["c02", new Point(-1, -1)], ["c03", new Point(-1, 0)], ["c04", new Point(0, 0)]],
     TriangleRule)
     .setHinge(1, ["101", "102", "103", "104", "105", "106", "107", "108", "109", "110",
         "111", "112", "113", "114", "115", "116", "117", "118", "119", "120", "c01", "c02", "c03", "c04"])

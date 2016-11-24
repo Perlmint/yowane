@@ -153,7 +153,7 @@ export class CanvasManager {
         return [retX, retY];
     }
 
-    getNearestPoint(x: number, y: number, range?: number): Point {
+    getNearestCoord(x: number, y: number, range?: number): Point {
         x = x * this.zoom + this.x;
         y = y * this.zoom + this.y;
 

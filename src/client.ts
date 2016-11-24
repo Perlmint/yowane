@@ -88,6 +88,7 @@ $(document).ready(() => {
         const paperElement = $("#paper");
 
         let sequence: Point[] = [];
+        let sequenceAsDelta: string[] = [];
 
         let lastPt: Point = null;
         let nextPt: Point = null;
@@ -140,15 +141,24 @@ $(document).ready(() => {
                 next = null;
                 nextPt = null;
 
+                if (1 < sequence.length) {
+                    let prev = sequence[sequence.length - 2];
+                    let diff = new Point(lastPt.x - prev.x, lastPt.y - prev.y);
+
+                    for (let i in Point.directions.toArray()) {
+                        let dir = Point.directions[i];
+
+                        if (dir.x === diff.x && dir.y === diff.y) {
+                            sequenceAsDelta.push(i);
+                        }
+                    }
+                }
+
                 // Draw
                 renderer.drawCircle(lastPt, "a");
 
-                let prev = null;
                 if (1 < sequence.length) {
-                    prev = sequence[sequence.length - 2];
-                }
-
-                if (prev !== null) {
+                    let prev = sequence[sequence.length - 2];
                     renderer.drawConnection(lastPt, prev, ConnectionType.strong);
                 }
             }

@@ -16853,7 +16853,6 @@
 	        }
 	    }
 	    onInputEnded() {
-	        this.input.hoverEnabled = false;
 	        this._endButton.attr("disabled", "disabled");
 	        this.done = true;
 	        this._removeHover();
@@ -16934,7 +16933,7 @@
 	        this._oritatamiItr.next();
 	    }
 	    drawMouseMove() {
-	        if (this.input.hoverEnabled === false) {
+	        if (this.done === true) {
 	            return;
 	        }
 	        this._removeHover();
@@ -17296,7 +17295,6 @@
 	        this._paperElement = paperElement;
 	        this._renderer = renderer;
 	        this._onClick = onClickHandler;
-	        this.hoverEnabled = true;
 	        $(paperElement).mousemove((e) => {
 	            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
 	            this.mousemove(pt);
@@ -17322,7 +17320,7 @@
 	        this._renderer.drawClick();
 	    }
 	    mousemove(pt) {
-	        if (this.hoverEnabled === false) {
+	        if (this._renderer.done === true) {
 	            return;
 	        }
 	        pt.x = Math.round(pt.x);
@@ -17346,6 +17344,9 @@
 	        this.hoverPt = pt;
 	    }
 	    click(pt) {
+	        if (this._renderer.done === true) {
+	            return;
+	        }
 	        this.hoverPt = null;
 	        this.sequence.push(pt);
 	        if (1 < this.sequence.length) {

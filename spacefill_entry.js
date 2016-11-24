@@ -16837,10 +16837,14 @@
 	class SpaceFillRenderer extends renderer_1.Renderer {
 	    constructor(canvas, theme) {
 	        super(canvas, theme);
+	        this._dx = this._dy = 0;
+	        this._scale = 1;
 	        const showInputDiv = $("#input_sequence");
 	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this, () => {
 	            showInputDiv.html(this.input.sequenceToString());
 	        });
+	        canvas.onZoom((prev, cur) => this.onZoom(prev, cur));
+	        canvas.onScroll((dx, dy) => this.onScroll(dx, dy));
 	        this.drawEndButton();
 	        this.drawGrid();
 	        this.input.initialClick();
@@ -16856,6 +16860,10 @@
 	        this._button = this.paper.set()
 	            .push(this.paper.rect(2, 2, 100, 20, 1).toFront().attr({ fill: "red", stroke: "red 1px", opacity: 0.5 }))
 	            .push(this.paper.text(52, 12, "INPUT END"))
+	            .attr({
+	            cursor: "pointer",
+	            position: "fixed"
+	        })
 	            .mouseover(() => {
 	            this._buttonGlow = this._button.glow({
 	                width: 5, fill: true, opacity: 0.7
@@ -16865,6 +16873,18 @@
 	                this._buttonGlow.remove();
 	            }
 	        }).click(() => this.onInputEnded());
+	    }
+	    onZoom(prev, cur) {
+	        this._scale = cur;
+	        this.updateButtonTransform();
+	    }
+	    onScroll(dx, dy) {
+	        this._dx = dx;
+	        this._dy = dy;
+	        this.updateButtonTransform();
+	    }
+	    updateButtonTransform() {
+	        this._button.transform(`S${this._scale}T${this._dx},${this._dy}`);
 	    }
 	    onInputEnded() {
 	        // input end!
@@ -16876,6 +16896,9 @@
 	        }
 	        if (this.input.hoverPt) {
 	            this._hover = this.drawCircle(this.input.hoverPt, "z");
+	            this._hover.attr({
+	                cursor: "pointer"
+	            });
 	            return this._hover;
 	        }
 	    }
@@ -16910,9 +16933,12 @@
 	        this._renderer = renderer;
 	        this._onClick = onClickHandler;
 	        $(paperElement).mousemove((e) => {
-	            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
+	            const pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
 	            this.mousemove(pt);
-	            this._renderer.drawMouseMove().click((e) => this.onClick(e));
+	            const target = this._renderer.drawMouseMove();
+	            if (target) {
+	                target.click((e) => this.onClick(e));
+	            }
 	        });
 	    }
 	    initialClick() {
@@ -27237,6 +27263,8 @@
 	        this.gridSize = gridSize;
 	        this.width = width;
 	        this.height = height;
+	        this._onZoom = [];
+	        this._onScroll = [];
 	        this.paper = Raphael(this.canvasID, this.width, this.height);
 	        const self = this;
 	        let startX = 0;
@@ -27264,6 +27292,9 @@
 	            self.dX = (startX - e.pageX) * self.zoom;
 	            self.dY = (startY - e.pageY) * self.zoom;
 	            self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
+	            for (const handler of self._onScroll) {
+	                handler(self.x + self.dX, self.y + self.dY);
+	            }
 	        });
 	        this.paperElement.mouseup(function (e) {
 	            if (self.mouseDown === false) {
@@ -27300,6 +27331,7 @@
 	    handle(delta) {
 	        let oldWidth = this.width;
 	        let oldHeight = this.height;
+	        const oldZoom = this.zoom;
 	        if (delta < 0) {
 	            this.zoom -= ZOOM_SPEED;
 	        }
@@ -27317,6 +27349,9 @@
 	        this.x -= (this.width - oldWidth) / 2;
 	        this.y -= (this.height - oldHeight) / 2;
 	        this.paper.setViewBox(this.x, this.y, this.width, this.height, true);
+	        for (const handler of this._onZoom) {
+	            handler(oldZoom, this.zoom);
+	        }
 	    }
 	    /** Event handler for mouse wheel event.
 	     */
@@ -27364,6 +27399,12 @@
 	        pt.y = ((this.paper.height - y) / this.gridSize - 1) / Math.sin(Math.PI / 3);
 	        pt.x = x / this.gridSize - Math.cos(Math.PI / 3) * pt.y - 1;
 	        return pt;
+	    }
+	    onZoom(handler) {
+	        this._onZoom.push(handler);
+	    }
+	    onScroll(handler) {
+	        this._onScroll.push(handler);
 	    }
 	}
 	exports.CanvasManager = CanvasManager;

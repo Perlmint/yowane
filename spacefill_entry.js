@@ -16841,17 +16841,19 @@
 	        let wrapper = $("#paper").empty();
 	        wrapper.append(this.paper.canvas);
 	        let buttonList = $("#button_list");
-	        const endButton = $("<button class=\"btn btn-default\">end</button>");
-	        endButton.click(() => {
+	        this._endButton = $("<button class=\"btn btn-default\">end</button>");
+	        this._endButton.click(() => {
 	            this.onInputEnded();
 	        });
-	        buttonList.append(endButton);
+	        buttonList.append(this._endButton);
+	        this._endButton.attr("disabled", "disabled");
 	        if (config) {
 	            this._filler = config;
 	        }
 	    }
 	    onInputEnded() {
 	        this.input.hoverEnabled = false;
+	        this._endButton.attr("disabled", "disabled");
 	        this._removeHover();
 	        const wrapper = $("#paper").empty();
 	        const filler = spacefilling_1.TriangleFiller;
@@ -16943,6 +16945,9 @@
 	    }
 	    drawClick() {
 	        this._removeHover();
+	        if (this._endButton) {
+	            this._endButton.removeAttr("disabled");
+	        }
 	        let sequence = this.input.sequence;
 	        let lastPt = this.input.sequence[this.input.sequence.length - 1];
 	        this.drawCircle(lastPt, "a", false);

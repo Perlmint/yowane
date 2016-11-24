@@ -91,6 +91,7 @@
 	            y: "#c3bf15",
 	            z: "#3db35a"
 	        }));
+	        renderer.drawGrid();
 	        renderer.oritatami = config;
 	        renderer.createOritatamiHTML();
 	        return false;
@@ -200,6 +201,7 @@
 	            this.drawConnection(point, nextPoint, grid_1.ConnectionType.weak, null, color);
 	        }
 	        this._gridSet = this.paper.setFinish();
+	        this._gridToBack();
 	    }
 	    drawCircle(p, text, animation) {
 	        const [x, y] = this.canvas.getScreenCoord(p);
@@ -245,6 +247,11 @@
 	    }
 	    _drawPath(path) {
 	        return this.paper.path(path);
+	    }
+	    _gridToBack() {
+	        if (this._gridSet) {
+	            this._gridSet.toBack();
+	        }
 	    }
 	}
 	exports.Renderer = Renderer;
@@ -16877,7 +16884,6 @@
 	class OritatamiRenderer extends renderer_1.Renderer {
 	    constructor(canvas, theme) {
 	        super(canvas, theme);
-	        this.drawGrid();
 	    }
 	    get iterator() {
 	        return this._iterator;
@@ -16914,21 +16920,21 @@
 	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
 	        nextButton.click(() => {
 	            this._iterator.next();
-	            this._gridSet.toBack();
+	            this._gridToBack();
 	        });
 	        buttonDiv.append(nextButton);
 	        const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
 	        autoButton.click(() => {
 	            setInterval(() => {
 	                this._iterator.next();
-	                this._gridSet.toBack();
+	                this._gridToBack();
 	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
 	        });
 	        buttonDiv.append(autoButton);
 	        if (config) {
 	            this.oritatami = config;
 	        }
-	        this._gridSet.toBack();
+	        this._gridToBack();
 	    }
 	    drawNode(point, nodeAnimation, pathAnimation) {
 	        const near = this._grid.getNear(point);

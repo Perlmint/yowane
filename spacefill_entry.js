@@ -16848,6 +16848,14 @@
 	            this._filler = config;
 	        }
 	    }
+	    sequenceToString() {
+	        let ret;
+	        let obj = {};
+	        obj["sequence"] = this._input.sequence;
+	        obj["direction_sequence"] = this._input.sequenceAsDelta;
+	        ret = JSON.stringify(obj);
+	        return ret;
+	    }
 	    drawMouseMove() {
 	        if (this._hover) {
 	            this._hover.remove();

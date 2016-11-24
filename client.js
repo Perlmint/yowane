@@ -27414,6 +27414,7 @@
 	        * If you use your own event management code, change it as required.
 	         */
 	        this.canvasID = canvasID;
+	        this.paperElement = $("#" + this.canvasID);
 	        this.gridSize = gridSize;
 	        this.width = width;
 	        this.height = height;
@@ -27422,11 +27423,10 @@
 	        let startX = 0;
 	        let startY = 0;
 	        //Pan
-	        const paperElement = $("#" + this.canvasID);
-	        const svgEl = paperElement.children("svg")[0];
+	        const svgEl = this.paperElement.children("svg")[0];
 	        svgEl.addEventListener("mousewheel", function (e) { self.wheel(e); });
 	        svgEl.addEventListener("DOMMouseScroll", function (e) { self.wheel(e); });
-	        paperElement.mousedown(function (e) {
+	        this.paperElement.mousedown(function (e) {
 	            if (self.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
 	                return;
 	            }
@@ -27438,7 +27438,7 @@
 	            startX = e.pageX;
 	            startY = e.pageY;
 	        });
-	        paperElement.mousemove(function (e) {
+	        this.paperElement.mousemove(function (e) {
 	            if (self.mouseDown === false) {
 	                return;
 	            }
@@ -27446,7 +27446,7 @@
 	            self.dY = (startY - e.pageY) * self.zoom;
 	            self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
 	        });
-	        paperElement.mouseup(function (e) {
+	        this.paperElement.mouseup(function (e) {
 	            if (self.mouseDown === false) {
 	                return;
 	            }
@@ -27459,7 +27459,7 @@
 	            self.mouseDown = false;
 	            return;
 	        });
-	        paperElement.contextmenu(function () {
+	        this.paperElement.contextmenu(function () {
 	            return false;
 	        });
 	    }

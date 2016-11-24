@@ -16917,7 +16917,7 @@
 	            this._gridSet.toBack();
 	        });
 	        buttonDiv.append(nextButton);
-	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
+	        const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
 	        autoButton.click(() => {
 	            setInterval(() => {
 	                this._iterator.next();

@@ -17358,12 +17358,10 @@
 	    }
 	    sequenceToString() {
 	        const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
-	        const result = `{<br/>
+	        return `{<br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.sequenceAsDelta.toString()}]<br/>
 	}`;
-	        console.log(result);
-	        return result;
 	    }
 	}
 	exports.SpaceFillInputManager = SpaceFillInputManager;

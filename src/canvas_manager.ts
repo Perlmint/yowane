@@ -154,6 +154,9 @@ export class CanvasManager {
     }
 
     getNearestPoint(x: number, y: number, range?: number): Point {
+        x = x + this.x;
+        y = y + this.y;
+
         let pt = new Point();
         pt.y = ((this.paper.height - y) / this.gridSize - 1) / Math.sin(Math.PI / 3);
         pt.x = x / this.gridSize - Math.cos(Math.PI / 3) * pt.y - 1;

@@ -27418,8 +27418,6 @@
 	        this.gridSize = gridSize;
 	        this.width = width;
 	        this.height = height;
-	        this._onZoom = [];
-	        this._onScroll = [];
 	        this.paper = Raphael(this.canvasID, this.width, this.height);
 	        const self = this;
 	        let startX = 0;
@@ -27447,9 +27445,6 @@
 	            self.dX = (startX - e.pageX) * self.zoom;
 	            self.dY = (startY - e.pageY) * self.zoom;
 	            self.paper.setViewBox(self.x + self.dX, self.y + self.dY, self.width, self.height, true);
-	            for (const handler of self._onScroll) {
-	                handler(self.x + self.dX, self.y + self.dY);
-	            }
 	        });
 	        this.paperElement.mouseup(function (e) {
 	            if (self.mouseDown === false) {
@@ -27486,7 +27481,6 @@
 	    handle(delta) {
 	        let oldWidth = this.width;
 	        let oldHeight = this.height;
-	        const oldZoom = this.zoom;
 	        if (delta < 0) {
 	            this.zoom -= ZOOM_SPEED;
 	        }
@@ -27504,9 +27498,6 @@
 	        this.x -= (this.width - oldWidth) / 2;
 	        this.y -= (this.height - oldHeight) / 2;
 	        this.paper.setViewBox(this.x, this.y, this.width, this.height, true);
-	        for (const handler of this._onZoom) {
-	            handler(oldZoom, this.zoom);
-	        }
 	    }
 	    /** Event handler for mouse wheel event.
 	     */
@@ -27554,12 +27545,6 @@
 	        pt.y = ((this.paper.height - y) / this.gridSize - 1) / Math.sin(Math.PI / 3);
 	        pt.x = x / this.gridSize - Math.cos(Math.PI / 3) * pt.y - 1;
 	        return pt;
-	    }
-	    onZoom(handler) {
-	        this._onZoom.push(handler);
-	    }
-	    onScroll(handler) {
-	        this._onScroll.push(handler);
 	    }
 	}
 	exports.CanvasManager = CanvasManager;

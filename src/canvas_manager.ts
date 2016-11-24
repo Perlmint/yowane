@@ -43,10 +43,10 @@ export class CanvasManager {
         let startX: number = 0;
         let startY: number = 0;
 
-        //Pan
+        // Pan
         const svgEl = this.paperElement.children("svg")[0];
-        svgEl.addEventListener("mousewheel", function (e) { self.wheel(e) });
-        svgEl.addEventListener("DOMMouseScroll", function (e) { self.wheel(e) });
+        svgEl.addEventListener("mousewheel", function (e) { self.wheel(e); });
+        svgEl.addEventListener("DOMMouseScroll", function (e) { self.wheel(e); });
         this.paperElement.mousedown(function (e) {
             if (self.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
                 return;

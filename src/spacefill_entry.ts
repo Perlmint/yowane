@@ -8,7 +8,7 @@ import { Point, ConnectionType } from "./grid";
 import * as $ from "jquery";
 
 // Space filling
-$("#spacefill-submit").click(() => {
+$(document).ready(() => {
     const configStr = $("#spacefill-input").val();
     const config = JSON.parse(configStr) as OritatamiConfig;
 

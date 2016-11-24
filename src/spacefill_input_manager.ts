@@ -4,7 +4,8 @@ import { Point } from "./grid";
 
 export class SpaceFillInputManager {
     sequence: Point[] = [];
-    sequenceAsDelta: number[] = [];
+    absoluteDirections: number[] = [];
+    relativeDirections: number[] = [];
 
     hoverPt: Point;
     hoverEnabled: boolean;
@@ -96,7 +97,14 @@ export class SpaceFillInputManager {
                 let dir = dirList[i];
 
                 if (dir.x === diff.x && dir.y === diff.y) {
-                    this.sequenceAsDelta.push(i);
+                    this.absoluteDirections.push(i);
+                    if (this.absoluteDirections.length > 1) {
+                        const lastDirection = this.absoluteDirections[this.absoluteDirections.length - 2];
+                        const relativeDirection = i - lastDirection + 3;
+                        this.relativeDirections.push(relativeDirection < 0 ? relativeDirection + 6 : relativeDirection);
+                    } else {
+                        this.relativeDirections.push(i);
+                    }
                 }
             }
         }
@@ -106,7 +114,7 @@ export class SpaceFillInputManager {
         const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
         return `{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.sequenceAsDelta.toString()}]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.relativeDirections.toString()}]<br/>
 }`;
     }
 }

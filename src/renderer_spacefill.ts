@@ -52,7 +52,7 @@ export class SpaceFillRenderer extends Renderer {
         }
 
         const filler = TriangleFiller;
-        const seqs = filler.predictSequences(this.input.sequenceAsDelta);
+        const seqs = filler.predictSequences(this.input.relativeDirections);
         // const seqs = filler.predictSequences("3331452145213542145151333234".split("").map(v => parseInt(v)));
         const oritatami = new Oritatami(filler.delay, filler.rule);
         const grid = new Grid();

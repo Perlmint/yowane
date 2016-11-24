@@ -15,11 +15,13 @@ export class SpaceFillRenderer extends Renderer {
     _filler: Filler;
     _hover: RaphaelSet;
     input: SpaceFillInputManager;
-    onClick: () => void;
 
     constructor(canvas: CanvasManager, theme?: Theme) {
         super(canvas, theme);
-        this.input = new SpaceFillInputManager(canvas.paperElement, this);
+        const showInputDiv = $("#input_sequence");
+        this.input = new SpaceFillInputManager(canvas.paperElement, this, () => {
+            showInputDiv.html(this.input.sequenceToString());
+        });
 
         this.drawGrid();
         this.input.initialClick();

@@ -8,12 +8,14 @@ export class SpaceFillInputManager {
 
     hoverPt: Point;
 
+    _onClick: () => void;
     _paperElement: JQuery;
     _renderer: SpaceFillRenderer;
 
-    constructor(paperElement: JQuery, renderer: SpaceFillRenderer) {
+    constructor(paperElement: JQuery, renderer: SpaceFillRenderer, onClickHandler: () => void) {
         this._paperElement = paperElement;
         this._renderer = renderer;
+        this._onClick = onClickHandler;
 
         $(paperElement).mousemove((e) => {
             let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
@@ -33,8 +35,8 @@ export class SpaceFillInputManager {
                 this._renderer.drawClick();
             }
 
-            if (this._renderer.onClick) {
-                this._renderer.onClick();
+            if (this._onClick) {
+                this._onClick();
             }
         });
     }
@@ -94,17 +96,13 @@ export class SpaceFillInputManager {
         }
     }
 
-    sequenceToString(): string {
-        let ret: string;
-
-        let obj = {};
-        obj["sequence"] = this.sequence;
-        obj["direction_sequence"] = this.sequenceAsDelta;
-
-        ret = JSON.stringify(obj);
-
-        console.log(ret);
-
-        return ret;
+    sequenceToString(): string {        
+        const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
+        const result =  `{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.sequenceAsDelta.toString()}]<br/>
+}`;
+        console.log(result);
+        return result;
     }
 }

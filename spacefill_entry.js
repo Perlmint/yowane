@@ -16856,8 +16856,6 @@
 	        this._endButton.attr("disabled", "disabled");
 	        this.done = true;
 	        this._removeHover();
-	        this.canvas.paper.remove();
-	        $("#paper").remove();
 	        const filler = spacefilling_1.TriangleFiller;
 	        const fillSeqs = filler.predictSequences(this.input.relativeDirections);
 	        const canvas = new canvas_manager_1.CanvasManager(this._oritatamiCanvasName, 500, 500, 100);

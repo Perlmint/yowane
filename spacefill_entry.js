@@ -16833,7 +16833,6 @@
 	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this, () => {
 	            showInputDiv.html(this.input.sequenceToString());
 	        });
-	        this.drawGrid();
 	        this.input.initialClick();
 	    }
 	    createSpaceFillHTML(config) {

@@ -131,7 +131,7 @@ export class OritatamiRenderer extends Renderer {
 
     drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {
         const near = this._grid.getNear(point);
-        this.drawCircle(point, near.c, nodeAnimation);
+        this.drawCircle(point, near.c, true, nodeAnimation);
         const weakConnected: Point[] = [];
         for (const info of Point.directions.nearToArray(near)) {
             const rel = this._oritatami.rule.get(info[1], near.c);

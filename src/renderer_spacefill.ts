@@ -125,7 +125,7 @@ export class SpaceFillRenderer extends Renderer {
 
         // Draw
         for (let pt of predictList) {
-            this.drawCircle(pt, "f");
+            this.drawCircle(pt, "f", false);
         }
     }
 
@@ -139,7 +139,7 @@ export class SpaceFillRenderer extends Renderer {
         }
 
         if (this.input.hoverPt) {
-            this._hover = this.drawCircle(this.input.hoverPt, "z");
+            this._hover = this.drawCircle(this.input.hoverPt, "z", false);
         }
     }
 
@@ -152,7 +152,7 @@ export class SpaceFillRenderer extends Renderer {
         let sequence = this.input.sequence;
         let lastPt = this.input.sequence[this.input.sequence.length - 1];
 
-        this.drawCircle(lastPt, "a");
+        this.drawCircle(lastPt, "a", false);
 
         if (1 < sequence.length) {
             let prev = sequence[sequence.length - 2];

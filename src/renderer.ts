@@ -137,7 +137,7 @@ export class Renderer {
         this._gridToBack();
     }
 
-    drawCircle(p: Point, text: string, animation?: AnimationContext): RaphaelSet {
+    drawCircle(p: Point, text: string, drawText: boolean = true, animation?: AnimationContext): RaphaelSet {
         const [x, y] = this.canvas.getScreenCoord(p);
         const attr = {
             fill: "white",
@@ -148,13 +148,19 @@ export class Renderer {
         this.paper.setStart();
         if (animation) {
             this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
-            this.paper.text(x, y, text).attr({
-                "font-size": 15,
-                opacity: 0
-            }).animate({ opacity: 1 }, animation.ms, animation.easing);
+
+            if (drawText === true) {
+                this.paper.text(x, y, text).attr({
+                    "font-size": 15,
+                    opacity: 0
+                }).animate({ opacity: 1 }, animation.ms, animation.easing);
+            }
         } else {
             this.paper.circle(x, y, this._circle_size).attr(attr);
-            this.paper.text(x, y, text).attr("font-size", 15);
+
+            if (drawText === true) {
+                this.paper.text(x, y, text).attr("font-size", 15);
+            }
         }
 
         return this.paper.setFinish();

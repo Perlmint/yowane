@@ -23,10 +23,13 @@ export class SpaceFillRenderer extends Renderer {
     input: SpaceFillInputManager;
 
     _endButton: JQuery;
+    done: boolean;
 
     constructor(canvas: CanvasManager, oritatami: CanvasManager, theme?: Theme) {
         super(canvas, theme);
         this._oritatamiCanvas = oritatami;
+        this.done = false;
+
         const showInputDiv = $("#input_sequence");
         this.input = new SpaceFillInputManager(canvas.paperElement, this, () => {
             showInputDiv.html(this.input.sequenceToString());
@@ -57,6 +60,7 @@ export class SpaceFillRenderer extends Renderer {
     onInputEnded() {
         this.input.hoverEnabled = false;
         this._endButton.attr("disabled", "disabled");
+        this.done = true;
 
         this._removeHover();
 
@@ -159,7 +163,7 @@ export class SpaceFillRenderer extends Renderer {
     drawClick() {
         this._removeHover();
 
-        if (this._endButton) {
+        if (this.done === false && this._endButton) {
             this._endButton.removeAttr("disabled");
         }
 

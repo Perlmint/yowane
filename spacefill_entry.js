@@ -16837,7 +16837,10 @@
 	class SpaceFillRenderer extends renderer_1.Renderer {
 	    constructor(canvas, theme) {
 	        super(canvas, theme);
-	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this);
+	        const showInputDiv = $("#input_sequence");
+	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this, () => {
+	            showInputDiv.html(this.input.sequenceToString());
+	        });
 	        this.drawGrid();
 	        this.input.initialClick();
 	    }
@@ -16880,11 +16883,12 @@
 	"use strict";
 	const grid_1 = __webpack_require__(3);
 	class SpaceFillInputManager {
-	    constructor(paperElement, renderer) {
+	    constructor(paperElement, renderer, onClickHandler) {
 	        this.sequence = [];
 	        this.sequenceAsDelta = [];
 	        this._paperElement = paperElement;
 	        this._renderer = renderer;
+	        this._onClick = onClickHandler;
 	        $(paperElement).mousemove((e) => {
 	            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
 	            this.mousemove(pt);
@@ -16899,8 +16903,8 @@
 	                this.click(this.hoverPt);
 	                this._renderer.drawClick();
 	            }
-	            if (this._renderer.onClick) {
-	                this._renderer.onClick();
+	            if (this._onClick) {
+	                this._onClick();
 	            }
 	        });
 	    }
@@ -16947,13 +16951,13 @@
 	        }
 	    }
 	    sequenceToString() {
-	        let ret;
-	        let obj = {};
-	        obj["sequence"] = this.sequence;
-	        obj["direction_sequence"] = this.sequenceAsDelta;
-	        ret = JSON.stringify(obj);
-	        console.log(ret);
-	        return ret;
+	        const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
+	        const result = `{<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.sequenceAsDelta.toString()}]<br/>
+	}`;
+	        console.log(result);
+	        return result;
 	    }
 	}
 	exports.SpaceFillInputManager = SpaceFillInputManager;

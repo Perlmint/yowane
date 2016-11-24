@@ -139,6 +139,7 @@ export class SpaceFillRenderer extends Renderer {
 
             this._hover = this.drawCircle(this.input.hoverPt, "z", false);
             this._hoverLine = this.drawConnection(lastPt, this.input.hoverPt, ConnectionType.strong, null, "F00");
+            this._gridToBack();
         }
     }
 
@@ -154,6 +155,8 @@ export class SpaceFillRenderer extends Renderer {
             let prev = sequence[sequence.length - 2];
             this.drawConnection(lastPt, prev, ConnectionType.strong);
         }
+
+        this._gridToBack();
     }
 
     _removeHover() {

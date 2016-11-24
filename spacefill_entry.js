@@ -16839,6 +16839,7 @@
 	        super(canvas, theme);
 	        this._input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this);
 	        this.drawGrid();
+	        this._input.initialClick();
 	    }
 	    createSpaceFillHTML(config) {
 	        let wrapper = $("#paper").empty();
@@ -16847,7 +16848,7 @@
 	            this._filler = config;
 	        }
 	    }
-	    drawMouseMove(x, y) {
+	    drawMouseMove() {
 	        if (this._hover) {
 	            this._hover.remove();
 	        }
@@ -16855,7 +16856,7 @@
 	            this._hover = this.drawCircle(this._input.hoverPt, "z");
 	        }
 	    }
-	    drawClick(x, y) {
+	    drawClick() {
 	        if (this._hover) {
 	            this._hover.remove();
 	            this._hover = null;
@@ -16885,20 +16886,25 @@
 	        this._paperElement = paperElement;
 	        this._renderer = renderer;
 	        $(paperElement).mousemove((e) => {
-	            this.mousemove(e.offsetX, e.offsetY);
-	            this._renderer.drawMouseMove(e.offsetX, e.offsetY);
+	            let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
+	            this.mousemove(pt);
+	            this._renderer.drawMouseMove();
 	        });
 	        $(paperElement).mousedown((e) => {
 	            // Left button only
 	            if (e.which !== 1) {
 	                return;
 	            }
-	            this.click(e.offsetX, e.offsetY);
-	            this._renderer.drawClick(e.offsetX, e.offsetY);
+	            this.click(this.hoverPt);
+	            this._renderer.drawClick();
 	        });
 	    }
-	    mousemove(x, y) {
-	        let pt = this._renderer.canvas.getNearestCoord(x, y);
+	    initialClick() {
+	        let pt = new grid_1.Point(0, 0);
+	        this.click(pt);
+	        this._renderer.drawClick();
+	    }
+	    mousemove(pt) {
 	        pt.x = Math.round(pt.x);
 	        pt.y = Math.round(pt.y);
 	        for (let i in this.sequence) {
@@ -16919,20 +16925,18 @@
 	        }
 	        this.hoverPt = pt;
 	    }
-	    click(x, y) {
-	        if (this.hoverPt) {
-	            this.sequence.push(this.hoverPt);
-	            this.hoverPt = null;
-	            if (1 < this.sequence.length) {
-	                let prev1 = this.sequence[this.sequence.length - 1];
-	                let prev2 = this.sequence[this.sequence.length - 2];
-	                let diff = new grid_1.Point(prev1.x - prev2.x, prev1.y - prev2.y);
-	                let dirList = grid_1.Point.directions.toArray();
-	                for (let i = 0; i < dirList.length; ++i) {
-	                    let dir = dirList[i];
-	                    if (dir.x === diff.x && dir.y === diff.y) {
-	                        this.sequenceAsDelta.push(i);
-	                    }
+	    click(pt) {
+	        this.hoverPt = null;
+	        this.sequence.push(pt);
+	        if (1 < this.sequence.length) {
+	            let prev1 = this.sequence[this.sequence.length - 1];
+	            let prev2 = this.sequence[this.sequence.length - 2];
+	            let diff = new grid_1.Point(prev1.x - prev2.x, prev1.y - prev2.y);
+	            let dirList = grid_1.Point.directions.toArray();
+	            for (let i = 0; i < dirList.length; ++i) {
+	                let dir = dirList[i];
+	                if (dir.x === diff.x && dir.y === diff.y) {
+	                    this.sequenceAsDelta.push(i);
 	                }
 	            }
 	        }

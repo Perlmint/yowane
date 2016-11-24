@@ -22,8 +22,6 @@ export class Rule {
         }
     }
 
-    
-
     _rules: {[key: string]: number};
 
     constructor();
@@ -83,7 +81,7 @@ export class Oritatami {
     delay: number;
     _paths: (number[])[];
     rule: Rule;
-    static _pathSet: {[key:number]:(number[])[]} = {};
+    static _pathSet: {[key: number]: (number[])[]} = {};
 
     static run(config: OritatamiConfig) {
         const oritatami = new Oritatami(config.delay, new Rule(config.rule));

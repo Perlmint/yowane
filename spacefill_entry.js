@@ -27885,7 +27885,7 @@
 	        const weakConnected = [];
 	        for (const info of grid_1.Point.directions.nearToArray(near)) {
 	            const rel = this._oritatami.rule.get(info[1], near.c);
-	            const absPoint = point.add(info[0]);
+	            const absPoint = grid_1.Point.added(point, info[0]);
 	            if (absPoint === this._last_point) {
 	                continue;
 	            }

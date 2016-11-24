@@ -45,7 +45,7 @@ $("#spacefill-submit").click(() => {
     const paperElement = $("#paper");
 
     let sequence: Point[] = [];
-    let sequenceAsDelta: string[] = [];
+    let sequenceAsDelta: number[] = [];
 
     let lastPt: Point = null;
     let nextPt: Point = null;
@@ -102,8 +102,10 @@ $("#spacefill-submit").click(() => {
                 let prev = sequence[sequence.length - 2];
                 let diff = new Point(lastPt.x - prev.x, lastPt.y - prev.y);
 
-                for (let i in Point.directions.toArray()) {
-                    let dir = Point.directions[i];
+                let dirList = Point.directions.toArray();
+
+                for (let i = 0; i < dirList.length; ++i) {
+                    let dir = dirList[i];
 
                     if (dir.x === diff.x && dir.y === diff.y) {
                         sequenceAsDelta.push(i);

@@ -27678,8 +27678,8 @@
 	        return [retX, retY];
 	    }
 	    getNearestPoint(x, y, range) {
-	        x = x + this.x;
-	        y = y + this.y;
+	        x = x * this.zoom + this.x;
+	        y = y * this.zoom + this.y;
 	        let pt = new grid_1.Point();
 	        pt.y = ((this.paper.height - y) / this.gridSize - 1) / Math.sin(Math.PI / 3);
 	        pt.x = x / this.gridSize - Math.cos(Math.PI / 3) * pt.y - 1;

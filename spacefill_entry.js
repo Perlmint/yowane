@@ -137,8 +137,9 @@
 	            if (1 < sequence.length) {
 	                let prev = sequence[sequence.length - 2];
 	                let diff = new grid_1.Point(lastPt.x - prev.x, lastPt.y - prev.y);
-	                for (let i in grid_1.Point.directions.toArray()) {
-	                    let dir = grid_1.Point.directions[i];
+	                let dirList = grid_1.Point.directions.toArray();
+	                for (let i = 0; i < dirList.length; ++i) {
+	                    let dir = dirList[i];
 	                    if (dir.x === diff.x && dir.y === diff.y) {
 	                        sequenceAsDelta.push(i);
 	                    }

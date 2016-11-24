@@ -132,6 +132,7 @@
 	        }));
 	        const paperElement = $("#paper");
 	        let sequence = [];
+	        let sequenceAsDelta = [];
 	        let lastPt = null;
 	        let nextPt = null;
 	        let next = null;
@@ -172,13 +173,20 @@
 	                next.remove();
 	                next = null;
 	                nextPt = null;
+	                if (1 < sequence.length) {
+	                    let prev = sequence[sequence.length - 2];
+	                    let diff = new grid_1.Point(lastPt.x - prev.x, lastPt.y - prev.y);
+	                    for (let i in grid_1.Point.directions.toArray()) {
+	                        let dir = grid_1.Point.directions[i];
+	                        if (dir.x === diff.x && dir.y === diff.y) {
+	                            sequenceAsDelta.push(i);
+	                        }
+	                    }
+	                }
 	                // Draw
 	                renderer.drawCircle(lastPt, "a");
-	                let prev = null;
 	                if (1 < sequence.length) {
-	                    prev = sequence[sequence.length - 2];
-	                }
-	                if (prev !== null) {
+	                    let prev = sequence[sequence.length - 2];
 	                    renderer.drawConnection(lastPt, prev, grid_1.ConnectionType.strong);
 	                }
 	            }

@@ -93,4 +93,18 @@ export class SpaceFillInputManager {
             }
         }
     }
+
+    sequenceToString(): string {
+        let ret: string;
+
+        let obj = {};
+        obj["sequence"] = this.sequence;
+        obj["direction_sequence"] = this.sequenceAsDelta;
+
+        ret = JSON.stringify(obj);
+
+        console.log(ret);
+
+        return ret;
+    }
 }

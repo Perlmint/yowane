@@ -34,25 +34,13 @@ export class SpaceFillRenderer extends Renderer {
         }
     }
 
-    sequenceToString(): string {
-        let ret: string;
-
-        let obj = {};
-        obj["sequence"] = this._input.sequence;
-        obj["direction_sequence"] = this._input.sequenceAsDelta;
-
-        ret = JSON.stringify(obj);
-
-        return ret;
-    }
-
     drawMouseMove() {
         if (this._hover) {
             this._hover.remove();
         }
 
-        if (this._input.hoverPt) {
-            this._hover = this.drawCircle(this._input.hoverPt, "z");
+        if (this.input.hoverPt) {
+            this._hover = this.drawCircle(this.input.hoverPt, "z");
         }
     }
 

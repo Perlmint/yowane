@@ -5,6 +5,7 @@ import { SpaceFillRenderer } from "./renderer_spacefill";
 import { OritatamiConfig } from "./oritatami";
 import { Filler } from "./spacefilling";
 import { CanvasManager } from "./canvas_manager";
+import { Point } from "./grid";
 import * as $ from "jquery";
 
 $(document).ready(() => {
@@ -86,21 +87,22 @@ $(document).ready(() => {
 
         const paperElement = $("#paper");
 
+        let prev: RaphaelSet;
+
         paperElement.mousemove(function (e) {
             let x = e.offsetX;
             let y = e.offsetY;
 
-            console.log(x + ", " + y);
-            let pt = paperManager.getNearestPoint(x, y);
-            console.log(pt);
-            renderer.drawCircle(pt, "z");
+            let pt = paperManager.getNearestCoord(x, y);
+            pt.x = Math.round(pt.x);
+            pt.y = Math.round(pt.y);
+
+            if (prev) {
+                prev.remove();
+            }
+
+            prev = renderer.drawCircle(pt, "z");
         });
-
-        let pt = paperManager.getNearestPoint(0, 0);
-        pt.x = 0;
-        pt.y = 0;
-
-        renderer.drawCircle(pt, "y");
 
         //        renderer.oritatami = config;
         renderer.createSpaceFillHTML();

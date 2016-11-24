@@ -16880,6 +16880,9 @@
 	                easing: "easeOut"
 	            });
 	        }
+	        return this.predict();
+	    }
+	    predict() {
 	        this._candidates = this._iterator.predict();
 	        return this._candidates;
 	    }
@@ -16929,7 +16932,7 @@
 	        }
 	    }
 	    createOritatamiHTML(config) {
-	        let wrapper = $("#paper").empty();
+	        let wrapper = $(this.canvas.paperElement).empty();
 	        wrapper.append(this.paper.canvas);
 	        const buttonDiv = $("<div class=\"buttons\"></div>");
 	        wrapper.append(buttonDiv);

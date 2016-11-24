@@ -27600,6 +27600,9 @@
 	"use strict";
 	const Raphael = __webpack_require__(10);
 	const grid_1 = __webpack_require__(3);
+	const ZOOM_MAX = 5;
+	const ZOOM_MIN = 0.2;
+	const ZOOM_SPEED = 0.1;
 	class CanvasManager {
 	    constructor(canvasID, width, height, gridSize) {
 	        this.dX = 0;
@@ -27682,10 +27685,16 @@
 	        let oldWidth = this.width;
 	        let oldHeight = this.height;
 	        if (delta < 0) {
-	            this.zoom -= 0.05;
+	            this.zoom -= ZOOM_SPEED;
 	        }
 	        else {
-	            this.zoom += 0.05;
+	            this.zoom += ZOOM_SPEED;
+	        }
+	        if (this.zoom < ZOOM_MIN) {
+	            this.zoom = ZOOM_MIN;
+	        }
+	        else if (this.zoom > ZOOM_MAX) {
+	            this.zoom = ZOOM_MAX;
 	        }
 	        this.width = this.paper.width * this.zoom;
 	        this.height = this.paper.height * this.zoom;

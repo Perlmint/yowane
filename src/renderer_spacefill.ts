@@ -17,19 +17,17 @@ export class SpaceFillRenderer extends Renderer {
     _filler: Filler;
     _hover: RaphaelSet;
     _hoverLine: RaphaelElement;
-    _oritatamiCanvas: CanvasManager;
+    _oritatamiCanvasName: string;
     _oritatami: OritatamiRenderer;
     _oritatamiItr: IterableIterator<Boolean>;
     input: SpaceFillInputManager;
-
     _endButton: JQuery;
     done: boolean;
 
-    constructor(canvas: CanvasManager, oritatami: CanvasManager, theme?: Theme) {
+    constructor(canvas: CanvasManager, oritatami: string, theme?: Theme) {
         super(canvas, theme);
-        this._oritatamiCanvas = oritatami;
+        this._oritatamiCanvasName = oritatami;
         this.done = false;
-
         const showInputDiv = $("#input_sequence");
         this.input = new SpaceFillInputManager(canvas.paperElement, this, () => {
             showInputDiv.html(this.input.sequenceToString());
@@ -39,7 +37,7 @@ export class SpaceFillRenderer extends Renderer {
     }
 
     createSpaceFillHTML(config?: Filler) {
-        let wrapper = $("#paper").empty();
+        let wrapper = this.canvas.paperElement.empty();
         wrapper.append(this.paper.canvas);
 
         let buttonList = $("#button_list");
@@ -63,10 +61,12 @@ export class SpaceFillRenderer extends Renderer {
 
         this._removeHover();
 
-        const wrapper = $("#paper").empty();
+        this.canvas.paper.remove();
+        $("#paper").remove();
         const filler = TriangleFiller;
         const fillSeqs = filler.predictSequences(this.input.relativeDirections);
-        const oritatami = this._oritatami = new OritatamiRenderer(this._oritatamiCanvas);
+        const canvas = new CanvasManager(this._oritatamiCanvasName, 500, 500, 100)
+        const oritatami = this._oritatami = new OritatamiRenderer(canvas);
         oritatami.drawGrid();
         oritatami.createOritatamiHTML();
         oritatami.oritatami = {
@@ -88,7 +88,7 @@ export class SpaceFillRenderer extends Renderer {
                 oritatami.createIterator(seq);
                 const iterator = oritatami.iterator;
                 do {
-                    const predicted = iterator.next();
+                    const predicted = iterator.predict();
                     if (predicted === null) {
                         break;
                     }

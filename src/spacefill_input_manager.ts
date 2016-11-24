@@ -21,23 +21,7 @@ export class SpaceFillInputManager {
             let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
 
             this.mousemove(pt);
-            this._renderer.drawMouseMove();
-        });
-
-        $(paperElement).mousedown((e) => {
-            // Left button only
-            if (e.which !== 1) {
-                return;
-            }
-
-            if (this.hoverPt != null) {
-                this.click(this.hoverPt);
-                this._renderer.drawClick();
-            }
-
-            if (this._onClick) {
-                this._onClick();
-            }
+            this._renderer.drawMouseMove().click((e) => this.onClick(e));
         });
     }
 
@@ -72,6 +56,22 @@ export class SpaceFillInputManager {
         }
 
         this.hoverPt = pt;
+    }
+
+    onClick(e: MouseEvent) {
+        // Left button only
+        if (e.which !== 1) {
+            return;
+        }
+
+        if (this.hoverPt != null) {
+            this.click(this.hoverPt);
+            this._renderer.drawClick();
+        }
+
+        if (this._onClick) {
+            this._onClick();
+        }
     }
 
     click(pt: Point) {

@@ -66,6 +66,7 @@ export class SpaceFillRenderer extends Renderer {
 
         if (this.input.hoverPt) {
             this._hover = this.drawCircle(this.input.hoverPt, "z");
+            return this._hover;
         }
     }
 

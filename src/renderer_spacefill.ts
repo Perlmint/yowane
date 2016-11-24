@@ -22,6 +22,8 @@ export class SpaceFillRenderer extends Renderer {
     _oritatamiItr: IterableIterator<Boolean>;
     input: SpaceFillInputManager;
 
+    _endButton: JQuery;
+
     constructor(canvas: CanvasManager, oritatami: CanvasManager, theme?: Theme) {
         super(canvas, theme);
         this._oritatamiCanvas = oritatami;
@@ -38,11 +40,15 @@ export class SpaceFillRenderer extends Renderer {
         wrapper.append(this.paper.canvas);
 
         let buttonList = $("#button_list");
-        const endButton = $("<button class=\"btn btn-default\">end</button>");
-        endButton.click(() => {
+        this._endButton = $("<button class=\"btn btn-default\">end</button>");
+        this._endButton.click(() => {
             this.onInputEnded();
         });
-        buttonList.append(endButton);
+
+        buttonList.append(this._endButton);
+
+        this._endButton.attr("disabled", "disabled");
+
         if (config) {
             this._filler = config;
         }
@@ -50,6 +56,7 @@ export class SpaceFillRenderer extends Renderer {
 
     onInputEnded() {
         this.input.hoverEnabled = false;
+        this._endButton.attr("disabled", "disabled");
 
         this._removeHover();
 
@@ -151,6 +158,10 @@ export class SpaceFillRenderer extends Renderer {
 
     drawClick() {
         this._removeHover();
+
+        if (this._endButton) {
+            this._endButton.removeAttr("disabled");
+        }
 
         let sequence = this.input.sequence;
         let lastPt = this.input.sequence[this.input.sequence.length - 1];

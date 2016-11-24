@@ -16893,72 +16893,15 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	const grid_1 = __webpack_require__(3);
 	__webpack_require__(4);
 	const $ = __webpack_require__(6);
 	const renderer_1 = __webpack_require__(2);
 	const NODE_ANIMATION_MS = 500;
 	const PATH_ANIMATION_MS = 300;
-	class AnimationContext {
-	}
-	class RenderIterator {
-	    constructor(renderer, iterator) {
-	        this._renderer = renderer;
-	        this._iterator = iterator;
-	        this._candidates = null;
-	    }
-	    next(choice) {
-	        if (choice == null && this._candidates != null) {
-	            if (this._candidates.length === 1) {
-	                choice = this._candidates[0];
-	            }
-	            else {
-	                throw new Error("Select one point from cadiates");
-	            }
-	        }
-	        /*        if (choice) {
-	                    this._iterator.next(choice);
-	                    this._renderer.drawNode(choice, {
-	                        ms: NODE_ANIMATION_MS,
-	                        easing: "elastic"
-	                    }, {
-	                            ms: PATH_ANIMATION_MS,
-	                            easing: "easeOut"
-	                        });
-	                }
-	                this._candidates = this._iterator.predict();
-	        */ return this._candidates;
-	    }
-	    isDone() {
-	        return true; // this._iterator.predict() == null;
-	    }
-	}
 	class SpaceFillRenderer extends renderer_1.Renderer {
 	    constructor(canvas, theme) {
 	        super(canvas, theme);
 	        this.drawGrid();
-	    }
-	    get iterator() {
-	        return this._iterator;
-	    }
-	    get theme() {
-	        return this._theme;
-	    }
-	    _createIterator(seq) {
-	        /*        const itr = this._oritatami.push(this._grid, this._last_point, seq);
-	                this._iterator = new RenderIterator(this, itr);
-	                */
-	    }
-	    _setSeeds(seeds) {
-	        let prevPoint = null;
-	        for (const seed of seeds) {
-	            const curPoint = new grid_1.Point(seed[0], seed[1]);
-	            if (!this._grid.put(curPoint, seed[2])) {
-	                throw new Error("Invalid seed!");
-	            }
-	            this.drawNode(curPoint);
-	            prevPoint = curPoint;
-	        }
 	    }
 	    createSpaceFillHTML(config) {
 	        let wrapper = $("#paper").empty();
@@ -16967,33 +16910,17 @@
 	        wrapper.append(buttonDiv);
 	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
 	        nextButton.click(() => {
-	            this._iterator.next();
 	        });
 	        buttonDiv.append(nextButton);
 	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
 	        autoButton.click(() => {
 	            setInterval(() => {
-	                this._iterator.next();
 	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
 	        });
 	        buttonDiv.append(autoButton);
 	        if (config) {
 	            this._filler = config;
 	        }
-	    }
-	    drawNode(point, nodeAnimation, pathAnimation) {
-	        const near = this._grid.getNear(point);
-	        this.drawCircle(point, near.c, nodeAnimation);
-	        const weakConnected = [];
-	        for (const info of grid_1.Point.directions.nearToArray(near)) {
-	        }
-	        for (const connected of weakConnected) {
-	            this.drawConnection(connected, point, grid_1.ConnectionType.weak, pathAnimation);
-	        }
-	        if (this._last_point) {
-	            this.drawConnection(this._last_point, point, grid_1.ConnectionType.strong, pathAnimation);
-	        }
-	        this._last_point = new grid_1.Point(point);
 	    }
 	}
 	exports.SpaceFillRenderer = SpaceFillRenderer;

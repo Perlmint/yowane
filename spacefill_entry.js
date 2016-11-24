@@ -60,8 +60,6 @@
 	const $ = __webpack_require__(6);
 	// Space filling
 	$(document).ready(() => {
-	    const configStr = $("#spacefill-input").val();
-	    const config = JSON.parse(configStr);
 	    let paperManager = new canvas_manager_1.CanvasManager("paper", 500, 500, 100);
 	    let renderer = new renderer_spacefill_1.SpaceFillRenderer(paperManager, new renderer_1.Theme({
 	        a: "#a69dd8",
@@ -16906,18 +16904,6 @@
 	    createSpaceFillHTML(config) {
 	        let wrapper = $("#paper").empty();
 	        wrapper.append(this.paper.canvas);
-	        const buttonDiv = $("<div class=\"buttons\"></div>");
-	        wrapper.append(buttonDiv);
-	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
-	        nextButton.click(() => {
-	        });
-	        buttonDiv.append(nextButton);
-	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
-	        autoButton.click(() => {
-	            setInterval(() => {
-	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
-	        });
-	        buttonDiv.append(autoButton);
 	        if (config) {
 	            this._filler = config;
 	        }

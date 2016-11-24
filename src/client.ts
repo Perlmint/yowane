@@ -87,7 +87,10 @@ $(document).ready(() => {
 
         const paperElement = $("#paper");
 
-        let prev: RaphaelSet;
+        let sequence: Point[] = [];
+
+        let nextPt: Point = null;
+        let next: RaphaelSet = null;
 
         paperElement.mousemove(function (e) {
             let x = e.offsetX;
@@ -97,11 +100,28 @@ $(document).ready(() => {
             pt.x = Math.round(pt.x);
             pt.y = Math.round(pt.y);
 
-            if (prev) {
-                prev.remove();
+            for (let i in sequence) {
+                let temp = sequence[i];
+                if (temp.x === pt.x && temp.y === pt.y) {
+                    return;
+                }
             }
 
-            prev = renderer.drawCircle(pt, "z");
+            if (next) {
+                next.remove();
+            }
+
+            next = renderer.drawCircle(pt, "z");
+            nextPt = pt;
+        });
+
+        paperElement.mousedown(function (e) {
+            if (next) {
+                sequence.push(nextPt);
+                renderer.drawCircle(nextPt, "a");
+                next = null;
+                nextPt = null;
+            }
         });
 
         //        renderer.oritatami = config;

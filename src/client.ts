@@ -127,6 +127,11 @@ $(document).ready(() => {
         });
 
         paperElement.mousedown(function (e) {
+            // Left button only
+            if (e.which !== 1) {
+                return;
+            }
+
             if (next) {
                 sequence.push(nextPt);
                 lastPt = nextPt;

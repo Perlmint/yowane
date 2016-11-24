@@ -47,6 +47,11 @@ export class CanvasManager {
                 return;
             }
 
+            // Right button only
+            if (e.which !== 3) {
+                return;
+            }
+
             self.mouseDown = true;
             startX = e.pageX;
             startY = e.pageY;
@@ -68,9 +73,20 @@ export class CanvasManager {
                 return;
             }
 
+            // Right button only
+            if (e.which !== 3) {
+                return;
+            }
+
             self.x += self.dX;
             self.y += self.dY;
             self.mouseDown = false;
+
+            return;
+        });
+
+        paperElement.contextmenu(function () {
+            return false;
         });
     }
 

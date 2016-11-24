@@ -16831,6 +16831,7 @@
 	    constructor(canvas, oritatami, theme) {
 	        super(canvas, theme);
 	        this._oritatamiCanvas = oritatami;
+	        this.done = false;
 	        const showInputDiv = $("#input_sequence");
 	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this, () => {
 	            showInputDiv.html(this.input.sequenceToString());
@@ -16854,6 +16855,7 @@
 	    onInputEnded() {
 	        this.input.hoverEnabled = false;
 	        this._endButton.attr("disabled", "disabled");
+	        this.done = true;
 	        this._removeHover();
 	        const wrapper = $("#paper").empty();
 	        const filler = spacefilling_1.TriangleFiller;
@@ -16945,7 +16947,7 @@
 	    }
 	    drawClick() {
 	        this._removeHover();
-	        if (this._endButton) {
+	        if (this.done === false && this._endButton) {
 	            this._endButton.removeAttr("disabled");
 	        }
 	        let sequence = this.input.sequence;

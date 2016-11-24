@@ -41,6 +41,7 @@ $(document).ready(() => {
             z: "#3db35a"
         }));
 
+        renderer.drawGrid();
         renderer.oritatami = config;
         renderer.createOritatamiHTML();
 

@@ -134,6 +134,7 @@ export class Renderer {
         }
 
         this._gridSet = this.paper.setFinish();
+        this._gridToBack();
     }
 
     drawCircle(p: Point, text: string, animation?: AnimationContext): RaphaelSet {
@@ -172,7 +173,6 @@ export class Renderer {
         }
 
         if (animation) {
-
             this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
                 .attr(attr)
                 .toBack()
@@ -186,5 +186,11 @@ export class Renderer {
 
     _drawPath(path: string) {
         return this.paper.path(path);
+    }
+
+    _gridToBack() {
+        if (this._gridSet) {
+            this._gridSet.toBack();
+        }
     }
 }

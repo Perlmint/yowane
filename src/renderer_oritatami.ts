@@ -77,8 +77,6 @@ export class OritatamiRenderer extends Renderer {
 
     constructor(canvas: CanvasManager, theme?: Theme) {
         super(canvas, theme);
-
-        this.drawGrid();
     }
 
     set oritatami(v: OritatamiConfig) {
@@ -113,14 +111,14 @@ export class OritatamiRenderer extends Renderer {
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => {
             this._iterator.next();
-            this._gridSet.toBack();
+            this._gridToBack();
         });
         buttonDiv.append(nextButton);
         const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
                 this._iterator.next();
-                this._gridSet.toBack();
+                this._gridToBack();
             }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
         });
         buttonDiv.append(autoButton);
@@ -128,7 +126,7 @@ export class OritatamiRenderer extends Renderer {
             this.oritatami = config;
         }
 
-        this._gridSet.toBack();
+        this._gridToBack();
     }
 
     drawNode(point: Point, nodeAnimation?: AnimationContext, pathAnimation?: AnimationContext) {

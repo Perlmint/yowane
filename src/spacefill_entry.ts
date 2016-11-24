@@ -39,6 +39,7 @@ $(document).ready(() => {
         z: "#3db35a"
     }));
 
+    renderer.drawGrid();
     renderer.createSpaceFillHTML();
 
     return false;

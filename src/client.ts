@@ -5,7 +5,7 @@ import { SpaceFillRenderer } from "./renderer_spacefill";
 import { OritatamiConfig } from "./oritatami";
 import { Filler } from "./spacefilling";
 import { CanvasManager } from "./canvas_manager";
-import { Point } from "./grid";
+import { Point, ConnectionType } from "./grid";
 import * as $ from "jquery";
 
 $(document).ready(() => {
@@ -89,6 +89,7 @@ $(document).ready(() => {
 
         let sequence: Point[] = [];
 
+        let lastPt: Point = null;
         let nextPt: Point = null;
         let next: RaphaelSet = null;
 
@@ -107,6 +108,16 @@ $(document).ready(() => {
                 }
             }
 
+            if (lastPt != null) {
+                let dX = pt.x - lastPt.x;
+                let dY = pt.y - lastPt.y;
+
+                if (((Math.abs(dX) === 0 || Math.abs(dX) === 1) && (Math.abs(dY) === 0 || Math.abs(dY) === 1)) === false
+                    || (dX * dY === 1)) {
+                    return;
+                }
+            }
+
             if (next) {
                 next.remove();
             }
@@ -118,9 +129,23 @@ $(document).ready(() => {
         paperElement.mousedown(function (e) {
             if (next) {
                 sequence.push(nextPt);
-                renderer.drawCircle(nextPt, "a");
+                lastPt = nextPt;
+
+                next.remove();
                 next = null;
                 nextPt = null;
+
+                // Draw
+                renderer.drawCircle(lastPt, "a");
+
+                let prev = null;
+                if (1 < sequence.length) {
+                    prev = sequence[sequence.length - 2];
+                }
+
+                if (prev !== null) {
+                    renderer.drawConnection(lastPt, prev, ConnectionType.strong);
+                }
             }
         });
 

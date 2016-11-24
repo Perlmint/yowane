@@ -16895,8 +16895,10 @@
 	            if (e.which !== 1) {
 	                return;
 	            }
-	            this.click(this.hoverPt);
-	            this._renderer.drawClick();
+	            if (this.hoverPt != null) {
+	                this.click(this.hoverPt);
+	                this._renderer.drawClick();
+	            }
 	        });
 	    }
 	    initialClick() {

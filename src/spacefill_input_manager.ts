@@ -4,7 +4,7 @@ import { Point } from "./grid";
 
 export class SpaceFillInputManager {
     sequence: Point[] = [];
-    absoluteDirections: number[] = [];
+    absoluteDirections: number[] = [1];
     relativeDirections: number[] = [];
 
     hoverPt: Point;
@@ -100,14 +100,9 @@ export class SpaceFillInputManager {
 
                 if (dir.x === diff.x && dir.y === diff.y) {
                     this.absoluteDirections.push(i);
-                    if (this.absoluteDirections.length > 1) {
-                        const lastDirection = this.absoluteDirections[this.absoluteDirections.length - 2];
-                        const relativeDirection = (i - lastDirection + 3) % 6;
-                        this.relativeDirections.push(relativeDirection < 0 ? relativeDirection + 6 : relativeDirection);
-                    } else {
-                        // start direction is 1 regardless of input
-                        this.relativeDirections.push(1);
-                    }
+                    const lastDirection = this.absoluteDirections[this.absoluteDirections.length - 2];
+                    const relativeDirection = (i - lastDirection + 3) % 6;
+                    this.relativeDirections.push(relativeDirection < 0 ? relativeDirection + 6 : relativeDirection);
                 }
             }
         }

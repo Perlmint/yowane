@@ -14,15 +14,15 @@ const PATH_ANIMATION_MS = 300;
 export class SpaceFillRenderer extends Renderer {
     _filler: Filler;
     _hover: RaphaelSet;
-    _input: SpaceFillInputManager;
+    input: SpaceFillInputManager;
     onClick: () => void;
 
     constructor(canvas: CanvasManager, theme?: Theme) {
         super(canvas, theme);
-        this._input = new SpaceFillInputManager(canvas.paperElement, this);
+        this.input = new SpaceFillInputManager(canvas.paperElement, this);
 
         this.drawGrid();
-        this._input.initialClick();
+        this.input.initialClick();
     }
 
     createSpaceFillHTML(config?: Filler) {
@@ -50,8 +50,8 @@ export class SpaceFillRenderer extends Renderer {
             this._hover = null;
         }
 
-        let sequence = this._input.sequence;
-        let lastPt = this._input.sequence[this._input.sequence.length - 1];
+        let sequence = this.input.sequence;
+        let lastPt = this.input.sequence[this.input.sequence.length - 1];
 
         this.drawCircle(lastPt, "a");
 

@@ -198,7 +198,7 @@
 	        this._gridSet = this.paper.setFinish();
 	        this._gridToBack();
 	    }
-	    drawCircle(p, text, animation) {
+	    drawCircle(p, text, drawText = true, animation) {
 	        const [x, y] = this.canvas.getScreenCoord(p);
 	        const attr = {
 	            fill: "white",
@@ -208,14 +208,18 @@
 	        this.paper.setStart();
 	        if (animation) {
 	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
-	            this.paper.text(x, y, text).attr({
-	                "font-size": 15,
-	                opacity: 0
-	            }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	            if (drawText === true) {
+	                this.paper.text(x, y, text).attr({
+	                    "font-size": 15,
+	                    opacity: 0
+	                }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	            }
 	        }
 	        else {
 	            this.paper.circle(x, y, this._circle_size).attr(attr);
-	            this.paper.text(x, y, text).attr("font-size", 15);
+	            if (drawText === true) {
+	                this.paper.text(x, y, text).attr("font-size", 15);
+	            }
 	        }
 	        return this.paper.setFinish();
 	    }
@@ -228,17 +232,19 @@
 	        if (color) {
 	            attr["stroke"] = "#" + color;
 	        }
+	        let path;
 	        if (animation) {
-	            this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
+	            path = this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
 	                .attr(attr)
 	                .toBack()
 	                .animate({ path: pathStr }, animation.ms, animation.easing);
 	        }
 	        else {
-	            this._drawPath(pathStr)
+	            path = this._drawPath(pathStr)
 	                .attr(attr)
 	                .toBack();
 	        }
+	        return path;
 	    }
 	    _drawPath(path) {
 	        return this.paper.path(path);
@@ -16869,10 +16875,7 @@
 	    }
 	    onInputEnded() {
 	        this.input.hoverEnabled = false;
-	        if (this._hover) {
-	            this._hover.remove();
-	            this._hover = null;
-	        }
+	        this._removeHover();
 	        const filler = spacefilling_1.TriangleFiller;
 	        const seqs = filler.predictSequences(this.input.relativeDirections);
 	        // const seqs = filler.predictSequences("3331452145213542145151333234".split("").map(v => parseInt(v)));
@@ -16941,31 +16944,36 @@
 	        }
 	        // Draw
 	        for (let pt of predictList) {
-	            this.drawCircle(pt, "f");
+	            this.drawCircle(pt, "f", false);
 	        }
 	    }
 	    drawMouseMove() {
 	        if (this.input.hoverEnabled === false) {
 	            return;
 	        }
-	        if (this._hover) {
-	            this._hover.remove();
-	        }
+	        this._removeHover();
 	        if (this.input.hoverPt) {
-	            this._hover = this.drawCircle(this.input.hoverPt, "z");
+	            let lastPt = this.input.sequence[this.input.sequence.length - 1];
+	            this._hover = this.drawCircle(this.input.hoverPt, "z", false);
+	            this._hoverLine = this.drawConnection(lastPt, this.input.hoverPt, grid_1.ConnectionType.strong, null, "F00");
 	        }
 	    }
 	    drawClick() {
-	        if (this._hover) {
-	            this._hover.remove();
-	            this._hover = null;
-	        }
+	        this._removeHover();
 	        let sequence = this.input.sequence;
 	        let lastPt = this.input.sequence[this.input.sequence.length - 1];
-	        this.drawCircle(lastPt, "a");
+	        this.drawCircle(lastPt, "a", false);
 	        if (1 < sequence.length) {
 	            let prev = sequence[sequence.length - 2];
 	            this.drawConnection(lastPt, prev, grid_1.ConnectionType.strong);
+	        }
+	    }
+	    _removeHover() {
+	        if (this._hover) {
+	            this._hover.remove();
+	            this._hoverLine.remove();
+	            this._hover = null;
+	            this._hoverLine = null;
 	        }
 	    }
 	}

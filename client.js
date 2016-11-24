@@ -203,7 +203,7 @@
 	        this._gridSet = this.paper.setFinish();
 	        this._gridToBack();
 	    }
-	    drawCircle(p, text, animation) {
+	    drawCircle(p, text, drawText = true, animation) {
 	        const [x, y] = this.canvas.getScreenCoord(p);
 	        const attr = {
 	            fill: "white",
@@ -213,14 +213,18 @@
 	        this.paper.setStart();
 	        if (animation) {
 	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
-	            this.paper.text(x, y, text).attr({
-	                "font-size": 15,
-	                opacity: 0
-	            }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	            if (drawText === true) {
+	                this.paper.text(x, y, text).attr({
+	                    "font-size": 15,
+	                    opacity: 0
+	                }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	            }
 	        }
 	        else {
 	            this.paper.circle(x, y, this._circle_size).attr(attr);
-	            this.paper.text(x, y, text).attr("font-size", 15);
+	            if (drawText === true) {
+	                this.paper.text(x, y, text).attr("font-size", 15);
+	            }
 	        }
 	        return this.paper.setFinish();
 	    }
@@ -233,17 +237,19 @@
 	        if (color) {
 	            attr["stroke"] = "#" + color;
 	        }
+	        let path;
 	        if (animation) {
-	            this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
+	            path = this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
 	                .attr(attr)
 	                .toBack()
 	                .animate({ path: pathStr }, animation.ms, animation.easing);
 	        }
 	        else {
-	            this._drawPath(pathStr)
+	            path = this._drawPath(pathStr)
 	                .attr(attr)
 	                .toBack();
 	        }
+	        return path;
 	    }
 	    _drawPath(path) {
 	        return this.paper.path(path);
@@ -16938,7 +16944,7 @@
 	    }
 	    drawNode(point, nodeAnimation, pathAnimation) {
 	        const near = this._grid.getNear(point);
-	        this.drawCircle(point, near.c, nodeAnimation);
+	        this.drawCircle(point, near.c, true, nodeAnimation);
 	        const weakConnected = [];
 	        for (const info of grid_1.Point.directions.nearToArray(near)) {
 	            const rel = this._oritatami.rule.get(info[1], near.c);

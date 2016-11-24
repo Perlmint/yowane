@@ -16887,9 +16887,14 @@
 	        return this._iterator.predict() == null;
 	    }
 	}
+	exports.RenderIterator = RenderIterator;
 	class OritatamiRenderer extends renderer_1.Renderer {
 	    constructor(canvas, theme) {
 	        super(canvas, theme);
+	        this.onNext = () => {
+	            this._iterator.next();
+	            this._gridToBack();
+	        };
 	    }
 	    get iterator() {
 	        return this._iterator;
@@ -16898,12 +16903,17 @@
 	        return this._theme;
 	    }
 	    set oritatami(v) {
-	        this._rule = new oritatami_1.Rule(v.rule);
+	        if (Array.isArray(v.rule)) {
+	            this._rule = new oritatami_1.Rule(v.rule);
+	        }
+	        else {
+	            this._rule = v.rule;
+	        }
 	        this._oritatami = new oritatami_1.Oritatami(v.delay, this._rule);
 	        this._setSeeds(v.seed);
-	        this._createIterator(v.sequence);
+	        this.createIterator(v.sequence);
 	    }
-	    _createIterator(seq) {
+	    createIterator(seq) {
 	        const itr = this._oritatami.push(this._grid, this._last_point, seq);
 	        this._iterator = new RenderIterator(this, itr);
 	    }
@@ -16924,16 +16934,12 @@
 	        const buttonDiv = $("<div class=\"buttons\"></div>");
 	        wrapper.append(buttonDiv);
 	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
-	        nextButton.click(() => {
-	            this._iterator.next();
-	            this._gridToBack();
-	        });
+	        nextButton.click(() => this.onNext());
 	        buttonDiv.append(nextButton);
 	        const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
 	        autoButton.click(() => {
 	            setInterval(() => {
-	                this._iterator.next();
-	                this._gridToBack();
+	                this.onNext();
 	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
 	        });
 	        buttonDiv.append(autoButton);
@@ -17036,7 +17042,14 @@
 	        this.setPaths();
 	    }
 	    static run(config) {
-	        const oritatami = new Oritatami(config.delay, new Rule(config.rule));
+	        let rule;
+	        if (Array.isArray(config.rule)) {
+	            rule = new Rule(config.rule);
+	        }
+	        else {
+	            rule = config.rule;
+	        }
+	        const oritatami = new Oritatami(config.delay, rule);
 	        const grid = new grid_1.Grid(config.seed);
 	        const lastSeed = config.seed[config.seed.length - 1];
 	        return oritatami.push(grid, new grid_1.Point(lastSeed[0], lastSeed[1]), config.sequence);

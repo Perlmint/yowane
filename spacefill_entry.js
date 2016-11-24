@@ -16858,13 +16858,11 @@
 	        let wrapper = $("#paper").empty();
 	        wrapper.append(this.paper.canvas);
 	        let buttonList = $("#button_list");
-	        const buttonDiv = $("<div class=\"buttons\"></div>");
-	        buttonList.append(buttonDiv);
 	        const endButton = $("<button class=\"btn btn-default\">end</button>");
 	        endButton.click(() => {
 	            this.onInputEnded();
 	        });
-	        buttonDiv.append(endButton);
+	        buttonList.append(endButton);
 	        if (config) {
 	            this._filler = config;
 	        }
@@ -16876,7 +16874,7 @@
 	            this._hover = null;
 	        }
 	        const filler = spacefilling_1.TriangleFiller;
-	        const seqs = filler.predictSequences(this.input.sequenceAsDelta);
+	        const seqs = filler.predictSequences(this.input.relativeDirections);
 	        // const seqs = filler.predictSequences("3331452145213542145151333234".split("").map(v => parseInt(v)));
 	        const oritatami = new oritatami_1.Oritatami(filler.delay, filler.rule);
 	        const grid = new grid_1.Grid();
@@ -17287,7 +17285,8 @@
 	class SpaceFillInputManager {
 	    constructor(paperElement, renderer, onClickHandler) {
 	        this.sequence = [];
-	        this.sequenceAsDelta = [];
+	        this.absoluteDirections = [];
+	        this.relativeDirections = [];
 	        this._paperElement = paperElement;
 	        this._renderer = renderer;
 	        this._onClick = onClickHandler;
@@ -17351,7 +17350,15 @@
 	            for (let i = 0; i < dirList.length; ++i) {
 	                let dir = dirList[i];
 	                if (dir.x === diff.x && dir.y === diff.y) {
-	                    this.sequenceAsDelta.push(i);
+	                    this.absoluteDirections.push(i);
+	                    if (this.absoluteDirections.length > 1) {
+	                        const lastDirection = this.absoluteDirections[this.absoluteDirections.length - 2];
+	                        const relativeDirection = i - lastDirection + 3;
+	                        this.relativeDirections.push(relativeDirection < 0 ? relativeDirection + 6 : relativeDirection);
+	                    }
+	                    else {
+	                        this.relativeDirections.push(i);
+	                    }
 	                }
 	            }
 	        }
@@ -17360,7 +17367,7 @@
 	        const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
 	        return `{<br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
-	&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.sequenceAsDelta.toString()}]<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.relativeDirections.toString()}]<br/>
 	}`;
 	    }
 	}

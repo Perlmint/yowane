@@ -57,6 +57,7 @@
 	const renderer_oritatami_1 = __webpack_require__(5);
 	const renderer_spacefill_1 = __webpack_require__(8);
 	const canvas_manager_1 = __webpack_require__(9);
+	const grid_1 = __webpack_require__(3);
 	const $ = __webpack_require__(7);
 	$(document).ready(() => {
 	    // Oritatami
@@ -130,18 +131,54 @@
 	            z: "#3db35a"
 	        }));
 	        const paperElement = $("#paper");
+	        let sequence = [];
+	        let lastPt = null;
+	        let nextPt = null;
+	        let next = null;
 	        paperElement.mousemove(function (e) {
 	            let x = e.offsetX;
 	            let y = e.offsetY;
-	            console.log(x + ", " + y);
-	            let pt = paperManager.getNearestPoint(x, y);
-	            console.log(pt);
-	            renderer.drawCircle(pt, "z");
+	            let pt = paperManager.getNearestCoord(x, y);
+	            pt.x = Math.round(pt.x);
+	            pt.y = Math.round(pt.y);
+	            for (let i in sequence) {
+	                let temp = sequence[i];
+	                if (temp.x === pt.x && temp.y === pt.y) {
+	                    return;
+	                }
+	            }
+	            if (lastPt != null) {
+	                let dX = pt.x - lastPt.x;
+	                let dY = pt.y - lastPt.y;
+	                if (((Math.abs(dX) === 0 || Math.abs(dX) === 1) && (Math.abs(dY) === 0 || Math.abs(dY) === 1)) === false
+	                    || (dX * dY === 1)) {
+	                    return;
+	                }
+	            }
+	            if (next) {
+	                next.remove();
+	            }
+	            next = renderer.drawCircle(pt, "z");
+	            nextPt = pt;
 	        });
-	        let pt = paperManager.getNearestPoint(0, 0);
-	        pt.x = 0;
-	        pt.y = 0;
-	        renderer.drawCircle(pt, "y");
+	        paperElement.mousedown(function (e) {
+	            if (next) {
+	                sequence.push(nextPt);
+	                lastPt = nextPt;
+	                next.remove();
+	                next = null;
+	                nextPt = null;
+	                // Draw
+	                renderer.drawCircle(lastPt, "a");
+	                let prev = null;
+	                if (1 < sequence.length) {
+	                    prev = sequence[sequence.length - 2];
+	                }
+	                if (prev !== null) {
+	                    renderer.drawConnection(lastPt, prev, grid_1.ConnectionType.strong);
+	                }
+	            }
+	        });
 	        //        renderer.oritatami = config;
 	        renderer.createSpaceFillHTML();
 	        return false;
@@ -259,6 +296,7 @@
 	            "stroke": this._theme.get(text),
 	            "stroke-width": 3,
 	        };
+	        this.paper.setStart();
 	        if (animation) {
 	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
 	            this.paper.text(x, y, text).attr({
@@ -270,6 +308,7 @@
 	            this.paper.circle(x, y, this._circle_size).attr(attr);
 	            this.paper.text(x, y, text).attr("font-size", 15);
 	        }
+	        return this.paper.setFinish();
 	    }
 	    drawConnection(p1, p2, type, animation, color) {
 	        const screenCoord = [this.canvas.getScreenCoord(p1), this.canvas.getScreenCoord(p2)];
@@ -27677,7 +27716,7 @@
 	        let retY = Math.round(this.paper.height - this.gridSize * (1 + tempY));
 	        return [retX, retY];
 	    }
-	    getNearestPoint(x, y, range) {
+	    getNearestCoord(x, y, range) {
 	        x = x * this.zoom + this.x;
 	        y = y * this.zoom + this.y;
 	        let pt = new grid_1.Point();

@@ -162,6 +162,10 @@
 	            nextPt = pt;
 	        });
 	        paperElement.mousedown(function (e) {
+	            // Left button only
+	            if (e.which !== 1) {
+	                return;
+	            }
 	            if (next) {
 	                sequence.push(nextPt);
 	                lastPt = nextPt;
@@ -27626,6 +27630,10 @@
 	            if (self.paper.getElementByPoint(e.pageX, e.pageY) !== null) {
 	                return;
 	            }
+	            // Right button only
+	            if (e.which !== 3) {
+	                return;
+	            }
 	            self.mouseDown = true;
 	            startX = e.pageX;
 	            startY = e.pageY;
@@ -27642,9 +27650,17 @@
 	            if (self.mouseDown === false) {
 	                return;
 	            }
+	            // Right button only
+	            if (e.which !== 3) {
+	                return;
+	            }
 	            self.x += self.dX;
 	            self.y += self.dY;
 	            self.mouseDown = false;
+	            return;
+	        });
+	        paperElement.contextmenu(function () {
+	            return false;
 	        });
 	    }
 	    getPaper() {

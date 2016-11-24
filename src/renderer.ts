@@ -166,7 +166,7 @@ export class Renderer {
         return this.paper.setFinish();
     }
 
-    drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext, color?: string) {
+    drawConnection(p1: Point, p2: Point, type: ConnectionType, animation?: AnimationContext, color?: string): RaphaelElement {
         const screenCoord = [this.canvas.getScreenCoord(p1), this.canvas.getScreenCoord(p2)];
         const pathStr = `M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[1][0]} ${screenCoord[1][1]}`;
 
@@ -178,16 +178,20 @@ export class Renderer {
             attr["stroke"] = "#" + color;
         }
 
+        let path: RaphaelElement;
+
         if (animation) {
-            this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
+            path = this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
                 .attr(attr)
                 .toBack()
                 .animate({ path: pathStr }, animation.ms, animation.easing);
         } else {
-            this._drawPath(pathStr)
+            path = this._drawPath(pathStr)
                 .attr(attr)
                 .toBack();
         }
+
+        return path;
     }
 
     _drawPath(path: string) {

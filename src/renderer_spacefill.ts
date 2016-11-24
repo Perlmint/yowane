@@ -15,6 +15,7 @@ const PATH_ANIMATION_MS = 300;
 export class SpaceFillRenderer extends Renderer {
     _filler: Filler;
     _hover: RaphaelSet;
+    _hoverLine: RaphaelElement;
     input: SpaceFillInputManager;
 
     constructor(canvas: CanvasManager, theme?: Theme) {
@@ -46,10 +47,7 @@ export class SpaceFillRenderer extends Renderer {
     onInputEnded() {
         this.input.hoverEnabled = false;
 
-        if (this._hover) {
-            this._hover.remove();
-            this._hover = null;
-        }
+        this._removeHover();
 
         const filler = TriangleFiller;
         const seqs = filler.predictSequences(this.input.relativeDirections);
@@ -134,20 +132,18 @@ export class SpaceFillRenderer extends Renderer {
             return;
         }
 
-        if (this._hover) {
-            this._hover.remove();
-        }
+        this._removeHover();
 
         if (this.input.hoverPt) {
+            let lastPt = this.input.sequence[this.input.sequence.length - 1];
+
             this._hover = this.drawCircle(this.input.hoverPt, "z", false);
+            this._hoverLine = this.drawConnection(lastPt, this.input.hoverPt, ConnectionType.strong, null, "F00");
         }
     }
 
     drawClick() {
-        if (this._hover) {
-            this._hover.remove();
-            this._hover = null;
-        }
+        this._removeHover();
 
         let sequence = this.input.sequence;
         let lastPt = this.input.sequence[this.input.sequence.length - 1];
@@ -157,6 +153,16 @@ export class SpaceFillRenderer extends Renderer {
         if (1 < sequence.length) {
             let prev = sequence[sequence.length - 2];
             this.drawConnection(lastPt, prev, ConnectionType.strong);
+        }
+    }
+
+    _removeHover() {
+        if (this._hover) {
+            this._hover.remove();
+            this._hoverLine.remove();
+
+            this._hover = null;
+            this._hoverLine = null;
         }
     }
 }

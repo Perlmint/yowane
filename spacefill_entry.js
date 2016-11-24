@@ -16837,9 +16837,9 @@
 	class SpaceFillRenderer extends renderer_1.Renderer {
 	    constructor(canvas, theme) {
 	        super(canvas, theme);
-	        this._input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this);
+	        this.input = new spacefill_input_manager_1.SpaceFillInputManager(canvas.paperElement, this);
 	        this.drawGrid();
-	        this._input.initialClick();
+	        this.input.initialClick();
 	    }
 	    createSpaceFillHTML(config) {
 	        let wrapper = $("#paper").empty();
@@ -16848,20 +16848,12 @@
 	            this._filler = config;
 	        }
 	    }
-	    sequenceToString() {
-	        let ret;
-	        let obj = {};
-	        obj["sequence"] = this._input.sequence;
-	        obj["direction_sequence"] = this._input.sequenceAsDelta;
-	        ret = JSON.stringify(obj);
-	        return ret;
-	    }
 	    drawMouseMove() {
 	        if (this._hover) {
 	            this._hover.remove();
 	        }
-	        if (this._input.hoverPt) {
-	            this._hover = this.drawCircle(this._input.hoverPt, "z");
+	        if (this.input.hoverPt) {
+	            this._hover = this.drawCircle(this.input.hoverPt, "z");
 	        }
 	    }
 	    drawClick() {
@@ -16869,8 +16861,8 @@
 	            this._hover.remove();
 	            this._hover = null;
 	        }
-	        let sequence = this._input.sequence;
-	        let lastPt = this._input.sequence[this._input.sequence.length - 1];
+	        let sequence = this.input.sequence;
+	        let lastPt = this.input.sequence[this.input.sequence.length - 1];
 	        this.drawCircle(lastPt, "a");
 	        if (1 < sequence.length) {
 	            let prev = sequence[sequence.length - 2];
@@ -16953,6 +16945,15 @@
 	                }
 	            }
 	        }
+	    }
+	    sequenceToString() {
+	        let ret;
+	        let obj = {};
+	        obj["sequence"] = this.sequence;
+	        obj["direction_sequence"] = this.sequenceAsDelta;
+	        ret = JSON.stringify(obj);
+	        console.log(ret);
+	        return ret;
 	    }
 	}
 	exports.SpaceFillInputManager = SpaceFillInputManager;

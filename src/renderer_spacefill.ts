@@ -47,6 +47,8 @@ export class SpaceFillRenderer extends Renderer {
     onInputEnded() {
         // input end!
         alert("End!");
+        this.input.hoverEnabled = false;
+
     }
 
     drawMouseMove() {

@@ -7,6 +7,7 @@ export class SpaceFillInputManager {
     sequenceAsDelta: number[] = [];
 
     hoverPt: Point;
+    hoverEnabled: boolean;
 
     _onClick: () => void;
     _paperElement: JQuery;
@@ -16,6 +17,7 @@ export class SpaceFillInputManager {
         this._paperElement = paperElement;
         this._renderer = renderer;
         this._onClick = onClickHandler;
+        this.hoverEnabled = true;
 
         $(paperElement).mousemove((e) => {
             let pt = this._renderer.canvas.getNearestCoord(e.offsetX, e.offsetY);
@@ -48,6 +50,10 @@ export class SpaceFillInputManager {
     }
 
     mousemove(pt: Point) {
+        if (this.hoverEnabled === false) {
+            return;
+        }
+
         pt.x = Math.round(pt.x);
         pt.y = Math.round(pt.y);
 
@@ -98,7 +104,7 @@ export class SpaceFillInputManager {
 
     sequenceToString(): string {
         const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
-        const result =  `{<br/>
+        const result = `{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.sequenceAsDelta.toString()}]<br/>
 }`;

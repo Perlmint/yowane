@@ -16932,6 +16932,7 @@
 	            let lastPt = this.input.sequence[this.input.sequence.length - 1];
 	            this._hover = this.drawCircle(this.input.hoverPt, "z", false);
 	            this._hoverLine = this.drawConnection(lastPt, this.input.hoverPt, grid_1.ConnectionType.strong, null, "F00");
+	            this._gridToBack();
 	        }
 	    }
 	    drawClick() {
@@ -16943,6 +16944,7 @@
 	            let prev = sequence[sequence.length - 2];
 	            this.drawConnection(lastPt, prev, grid_1.ConnectionType.strong);
 	        }
+	        this._gridToBack();
 	    }
 	    _removeHover() {
 	        if (this._hover) {

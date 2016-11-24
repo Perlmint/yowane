@@ -10,13 +10,15 @@
             padding-top: 20px;
             padding-bottom: 20px;
         }
-        #paper {
+        #paper, #oritatami {
             padding: 0;
-            width: 500px;
             min-height: 500px;
         }
         .row {
             margin-bottom: 20px;
+        }
+        #oritatami {
+            text-align: right;
         }
         div.col-xs-12 {
             margin-bottom: 20px;
@@ -61,6 +63,14 @@
 <div class="container">
     <h1>Run Spacefill</h1>
     <hr/>
+    <div class="row">
+        <div class="col-xs-6">
+            <h2>Input</h2>
+        </div>
+        <div class="col-xs-6" style="text-align: right">
+            <h2>Result</h2>
+        </div>
+    </div>
     <div class="row">
         <div id="paper" class="col-xs-6"></div>
         <div id="oritatami" class="col-xs-6"></div>

@@ -82,14 +82,14 @@ export class SpaceFillRenderer extends Renderer {
         let lp = new Point(0, 0);
 
         function* run(seqs: string[][]) {
-            let innerIdx = 0;
             let lastPoint = lp;
             for (const seq of seqs) {
+                let innerIdx = 0;
                 oritatami.createIterator(seq);
                 const iterator = oritatami.iterator;
                 do {
                     const predicted = iterator.predict();
-                    if (predicted === null) {
+                    if (predicted == null) {
                         break;
                     }
                     let nextPoint: Point;

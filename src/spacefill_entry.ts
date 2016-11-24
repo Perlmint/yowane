@@ -10,14 +10,17 @@ import * as $ from "jquery";
 
 // Space filling
 $(document).ready(() => {
-    let paperManager = new CanvasManager("paper", 500, 500, 100);
-    let renderer = new SpaceFillRenderer(paperManager, "oritatami", new Theme({
+    const paperManager = new CanvasManager("paper", 500, 500, 100);
+    const oritatamiCanvas = new CanvasManager("oritatami", 500, 500, 100);
+    const oritatami = this._oritatami = new OritatamiRenderer(oritatamiCanvas);
+    const renderer = new SpaceFillRenderer(paperManager, oritatami, new Theme({
         a: "#000",
         z: "#F00"
     }));
 
     renderer.drawGrid();
     renderer.createSpaceFillHTML();
+    oritatami.drawGrid();
 
     return false;
 });

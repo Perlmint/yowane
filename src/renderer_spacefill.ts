@@ -17,16 +17,15 @@ export class SpaceFillRenderer extends Renderer {
     _filler: Filler;
     _hover: RaphaelSet;
     _hoverLine: RaphaelElement;
-    _oritatamiCanvasName: string;
     _oritatami: OritatamiRenderer;
     _oritatamiItr: IterableIterator<Boolean>;
     input: SpaceFillInputManager;
     _endButton: JQuery;
     done: boolean;
 
-    constructor(canvas: CanvasManager, oritatami: string, theme?: Theme) {
+    constructor(canvas: CanvasManager, oritatami: OritatamiRenderer, theme?: Theme) {
         super(canvas, theme);
-        this._oritatamiCanvasName = oritatami;
+        this._oritatami = oritatami;
         this.done = false;
         const showInputDiv = $("#input_sequence");
         this.input = new SpaceFillInputManager(canvas.paperElement, this, () => {
@@ -63,9 +62,7 @@ export class SpaceFillRenderer extends Renderer {
 
         const filler = TriangleFiller;
         const fillSeqs = filler.predictSequences(this.input.relativeDirections);
-        const canvas = new CanvasManager(this._oritatamiCanvasName, 500, 500, 100)
-        const oritatami = this._oritatami = new OritatamiRenderer(canvas);
-        oritatami.drawGrid();
+        const oritatami = this._oritatami;
         oritatami.createOritatamiHTML();
         oritatami.oritatami = {
             delay: filler.delay,

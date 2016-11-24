@@ -53,13 +53,9 @@ export class Filler {
     }
 
     predictSequences(directions: number[]) {
-        let index = 1;
-        let currentDirection = directions[0];
         const ret: (string[])[] = [];
-        for (; index < directions.length; index++) {
-            const nextDirection = directions[index];
-            ret.push(this._hinges[nextDirection]);
-            currentDirection = nextDirection;
+        for (const direction of directions) {
+            ret.push(this._hinges[direction]);
         }
 
         return ret;

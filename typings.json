@@ -2,6 +2,7 @@
   "globalDependencies": {
     "chai": "registry:dt/chai#3.4.0+20160601211834",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
+    "lodash": "registry:dt/lodash#4.14.0+20161110215204",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353",
     "raphael": "registry:dt/raphael#2.1.0+20160626232910"
   }

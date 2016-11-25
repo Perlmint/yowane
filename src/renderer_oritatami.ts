@@ -120,18 +120,26 @@ export class OritatamiRenderer extends Renderer {
     createOritatamiHTML(config?: OritatamiConfig) {
         let wrapper = $(this.canvas.paperElement).empty();
         wrapper.append(this.paper.canvas);
-        const buttonDiv = $("<div class=\"buttons\"></div>");
-        wrapper.append(buttonDiv);
+        const group = $("<div class=\"buttons input-group\"></div>");
+        wrapper.append(group);
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => this.onNext());
-        buttonDiv.append(nextButton);
-        const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
+        group.append($("<div class=\"input-group-btn\"></div>").append(nextButton));
+        const autoInput = $("<input type=\"number\" class=\"form-control\" value=\"1\" />");
+        autoInput.change(() => {
+            const newRatio = parseInt(autoInput.val(), 10);
+            if (newRatio !== NaN) {
+                this._animationSpeedRatio = newRatio;
+            }
+        });
+        group.append(autoInput);
+        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
         autoButton.click(() => {
             setInterval(() => {
                 this.onNext();
-            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
+            }, Math.max(NODE_ANIMATION_MS / this._animationSpeedRatio, PATH_ANIMATION_MS / this._animationSpeedRatio));
         });
-        buttonDiv.append(autoButton);
+        group.append($("<div class=\"input-group-btn\"></div>").append(autoButton));
         if (config) {
             this.oritatami = config;
         }

@@ -59,13 +59,18 @@ export class Theme {
         }
     }
 
-    setColor(type: string | string[], color: Color) {
-        color = new Color(color);
+    setColor(type: string | string[], color: Color | string) {
+        let _color: Color;
+        if (typeof color === "string") {
+            _color = new Color(color);
+        } else {
+            _color = new Color(color);
+        }
         if (typeof type === "string") {
-            this._data[type] = color;
+            this._data[type] = _color;
         } else {
             type.forEach(t => {
-                this._data[t] = color;
+                this._data[t] = _color;
             });
         }
         return this;
@@ -91,6 +96,7 @@ export class Renderer {
     _grid: Grid;
     _rule: Rule;
     _theme: Theme;
+    _animationSpeedRatio: number = 1;
 
     get theme(): Theme {
         return this._theme;
@@ -147,13 +153,13 @@ export class Renderer {
 
         this.paper.setStart();
         if (animation) {
-            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
+            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms * this._animationSpeedRatio, animation.easing);
 
             if (drawText === true) {
                 this.paper.text(x, y, text).attr({
                     "font-size": 15,
                     opacity: 0
-                }).animate({ opacity: 1 }, animation.ms, animation.easing);
+                }).animate({ opacity: 1 }, animation.ms * this._animationSpeedRatio, animation.easing);
             }
         } else {
             this.paper.circle(x, y, this._circle_size).attr(attr);
@@ -184,7 +190,7 @@ export class Renderer {
             path = this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
                 .attr(attr)
                 .toBack()
-                .animate({ path: pathStr }, animation.ms, animation.easing);
+                .animate({ path: pathStr }, animation.ms / this._animationSpeedRatio, animation.easing);
         } else {
             path = this._drawPath(pathStr)
                 .attr(attr)

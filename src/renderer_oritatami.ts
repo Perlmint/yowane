@@ -125,7 +125,7 @@ export class OritatamiRenderer extends Renderer {
         const nextButton = $("<button class=\"btn btn-default\">next</button>");
         nextButton.click(() => this.onNext());
         group.append($("<div class=\"input-group-btn\"></div>").append(nextButton));
-        const autoInput = $("<input type=\"number\" class=\"form-control\" value=\"1\" />");
+        const autoInput = $("<input type=\"number\" class=\"form-control\" value=\"1\" min=\"0.01\" />");
         autoInput.change(() => {
             const newRatio = parseInt(autoInput.val(), 10);
             if (newRatio !== NaN && newRatio !== 0) {

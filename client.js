@@ -58,40 +58,40 @@
 	const canvas_manager_1 = __webpack_require__(8);
 	const $ = __webpack_require__(7);
 	$(document).ready(() => {
+	    let paperManager = new canvas_manager_1.CanvasManager("paper", 500, 500, 100);
+	    let renderer = new renderer_oritatami_1.OritatamiRenderer(paperManager, new renderer_1.Theme({
+	        a: "#a69dd8",
+	        b: "#0c35b0",
+	        c: "#f82750",
+	        d: "#0ebd31",
+	        e: "#5fab4f",
+	        f: "#c538cf",
+	        g: "#014a59",
+	        h: "#e14af8",
+	        i: "#9fb730",
+	        j: "#4bec60",
+	        k: "#ef9345",
+	        l: "#d2ece0",
+	        m: "#9cda80",
+	        n: "#dbc07c",
+	        o: "#7328dd",
+	        p: "#1e9942",
+	        q: "#621b7b",
+	        r: "#c830b2",
+	        s: "#362332",
+	        t: "#e8c55d",
+	        u: "#bd8787",
+	        v: "#66c6a4",
+	        w: "#21ec4b",
+	        x: "#782364",
+	        y: "#c3bf15",
+	        z: "#3db35a"
+	    }));
+	    renderer.drawGrid();
 	    // Oritatami
 	    $("#oritatami-submit").click(() => {
 	        const configStr = $("#oritatami-input").val();
 	        const config = JSON.parse(configStr);
-	        let paperManager = new canvas_manager_1.CanvasManager("paper", 500, 500, 100);
-	        let renderer = new renderer_oritatami_1.OritatamiRenderer(paperManager, new renderer_1.Theme({
-	            a: "#a69dd8",
-	            b: "#0c35b0",
-	            c: "#f82750",
-	            d: "#0ebd31",
-	            e: "#5fab4f",
-	            f: "#c538cf",
-	            g: "#014a59",
-	            h: "#e14af8",
-	            i: "#9fb730",
-	            j: "#4bec60",
-	            k: "#ef9345",
-	            l: "#d2ece0",
-	            m: "#9cda80",
-	            n: "#dbc07c",
-	            o: "#7328dd",
-	            p: "#1e9942",
-	            q: "#621b7b",
-	            r: "#c830b2",
-	            s: "#362332",
-	            t: "#e8c55d",
-	            u: "#bd8787",
-	            v: "#66c6a4",
-	            w: "#21ec4b",
-	            x: "#782364",
-	            y: "#c3bf15",
-	            z: "#3db35a"
-	        }));
-	        renderer.drawGrid();
 	        renderer.oritatami = config;
 	        renderer.createOritatamiHTML();
 	        return false;
@@ -147,13 +147,19 @@
 	        }
 	    }
 	    setColor(type, color) {
-	        color = new Color(color);
+	        let _color;
+	        if (typeof color === "string") {
+	            _color = new Color(color);
+	        }
+	        else {
+	            _color = new Color(color);
+	        }
 	        if (typeof type === "string") {
-	            this._data[type] = color;
+	            this._data[type] = _color;
 	        }
 	        else {
 	            type.forEach(t => {
-	                this._data[t] = color;
+	                this._data[t] = _color;
 	            });
 	        }
 	        return this;
@@ -170,6 +176,7 @@
 	exports.Theme = Theme;
 	class Renderer {
 	    constructor(canvas, theme) {
+	        this._animationSpeedRatio = 1;
 	        this.canvas = canvas;
 	        this.paper = canvas.getPaper();
 	        this._width = this.paper.width;
@@ -212,12 +219,12 @@
 	        };
 	        this.paper.setStart();
 	        if (animation) {
-	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms, animation.easing);
+	            this.paper.circle(x, y, 0).attr(attr).animate({ r: this._circle_size }, animation.ms * this._animationSpeedRatio, animation.easing);
 	            if (drawText === true) {
 	                this.paper.text(x, y, text).attr({
 	                    "font-size": 15,
 	                    opacity: 0
-	                }).animate({ opacity: 1 }, animation.ms, animation.easing);
+	                }).animate({ opacity: 1 }, animation.ms * this._animationSpeedRatio, animation.easing);
 	            }
 	        }
 	        else {
@@ -242,7 +249,7 @@
 	            path = this._drawPath(`M${screenCoord[0][0]} ${screenCoord[0][1]}L${screenCoord[0][0]} ${screenCoord[0][1]}`)
 	                .attr(attr)
 	                .toBack()
-	                .animate({ path: pathStr }, animation.ms, animation.easing);
+	                .animate({ path: pathStr }, animation.ms / this._animationSpeedRatio, animation.easing);
 	        }
 	        else {
 	            path = this._drawPath(pathStr)
@@ -16934,18 +16941,26 @@
 	    createOritatamiHTML(config) {
 	        let wrapper = $(this.canvas.paperElement).empty();
 	        wrapper.append(this.paper.canvas);
-	        const buttonDiv = $("<div class=\"buttons\"></div>");
-	        wrapper.append(buttonDiv);
+	        const group = $("<div class=\"buttons input-group\"></div>");
+	        wrapper.append(group);
 	        const nextButton = $("<button class=\"btn btn-default\">next</button>");
 	        nextButton.click(() => this.onNext());
-	        buttonDiv.append(nextButton);
-	        const autoButton = $("<button class=\"btn btn-default\" style=\"margin-left: 5px\">auto</button>");
+	        group.append($("<div class=\"input-group-btn\"></div>").append(nextButton));
+	        const autoInput = $("<input type=\"number\" class=\"form-control\" value=\"1\" min=\"0.01\" />");
+	        autoInput.change(() => {
+	            const newRatio = parseInt(autoInput.val(), 10);
+	            if (newRatio !== NaN && newRatio !== 0) {
+	                this._animationSpeedRatio = newRatio;
+	            }
+	        });
+	        group.append(autoInput);
+	        const autoButton = $("<button class=\"btn btn-default\">auto</button>");
 	        autoButton.click(() => {
 	            setInterval(() => {
 	                this.onNext();
-	            }, Math.max(NODE_ANIMATION_MS, PATH_ANIMATION_MS));
+	            }, Math.max(NODE_ANIMATION_MS / this._animationSpeedRatio, PATH_ANIMATION_MS / this._animationSpeedRatio));
 	        });
-	        buttonDiv.append(autoButton);
+	        group.append($("<div class=\"input-group-btn\"></div>").append(autoButton));
 	        if (config) {
 	            this.oritatami = config;
 	        }

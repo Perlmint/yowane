@@ -7,13 +7,14 @@ import { Filler } from "./spacefilling";
 import { CanvasManager } from "./canvas_manager";
 import { Point, ConnectionType } from "./grid";
 import * as $ from "jquery";
+import * as _ from "lodash";
 
 // Space filling
 $(document).ready(() => {
     const paperManager = new CanvasManager("paper", 500, 500, 100);
     const oritatamiCanvas = new CanvasManager("oritatami", 500, 500, 100);
     const keyGenerator = (dir: number) => {
-        return Array.apply([], Array(20)).map((v, idx) => `${dir}${idx}`);
+        return Array.apply([], Array(20)).map((v, idx) => `${dir}${_.padStart((idx + 1).toString(), 2, "0")}`);
     };
     const oritatami = this._oritatami = new OritatamiRenderer(oritatamiCanvas, new Theme({
         c01: "#a69dd8",

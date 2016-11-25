@@ -37,15 +37,14 @@ export class SpaceFillRenderer extends Renderer {
 
     createSpaceFillHTML(config?: Filler) {
         let wrapper = this.canvas.paperElement.empty();
-        wrapper.append(this.paper.canvas);
+        wrapper.append($("<div></div>").append(this.paper.canvas));
 
-        let buttonList = $("#button_list");
         this._endButton = $("<button class=\"btn btn-default\">end</button>");
         this._endButton.click(() => {
             this.onInputEnded();
         });
 
-        buttonList.append(this._endButton);
+        wrapper.append(this._endButton);
 
         this._endButton.attr("disabled", "disabled");
 

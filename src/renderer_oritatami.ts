@@ -128,7 +128,7 @@ export class OritatamiRenderer extends Renderer {
         const autoInput = $("<input type=\"number\" class=\"form-control\" value=\"1\" />");
         autoInput.change(() => {
             const newRatio = parseInt(autoInput.val(), 10);
-            if (newRatio !== NaN) {
+            if (newRatio !== NaN && newRatio !== 0) {
                 this._animationSpeedRatio = newRatio;
             }
         });

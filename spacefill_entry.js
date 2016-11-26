@@ -27451,7 +27451,7 @@
 	        this._endButton.click(() => {
 	            this.onInputEnded();
 	        });
-	        wrapper.append(this._endButton);
+	        $("#button_list").append(this._endButton);
 	        this._endButton.attr("disabled", "disabled");
 	        if (config) {
 	            this._filler = config;

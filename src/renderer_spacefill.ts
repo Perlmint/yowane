@@ -44,7 +44,7 @@ export class SpaceFillRenderer extends Renderer {
             this.onInputEnded();
         });
 
-        wrapper.append(this._endButton);
+        $("#button_list").append(this._endButton);
 
         this._endButton.attr("disabled", "disabled");
 

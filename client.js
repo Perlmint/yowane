@@ -27465,7 +27465,7 @@
 	        const self = this;
 	        let startX = 0;
 	        let startY = 0;
-	        //Pan
+	        // Pan
 	        const svgEl = this.paperElement.children("svg")[0];
 	        svgEl.addEventListener("mousewheel", function (e) { self.wheel(e); });
 	        svgEl.addEventListener("DOMMouseScroll", function (e) { self.wheel(e); });

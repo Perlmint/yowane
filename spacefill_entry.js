@@ -27531,9 +27531,11 @@
 	        }
 	        this._oritatamiItr = run(fillSeqs);
 	        this._oritatami.onNext = () => this.onOritatamiNext();
+	        this._oritatami._gridToBack();
 	    }
 	    onOritatamiNext() {
 	        this._oritatamiItr.next();
+	        this._oritatami._gridToBack();
 	    }
 	    drawMouseMove() {
 	        if (this.done === true) {

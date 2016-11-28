@@ -59,6 +59,15 @@ export class Rule {
             return 0;
         }
     }
+
+    toConfig(): [string, string][] {
+        let ret = [];
+        for (const ruleName of _.keys(this._rules)) {
+            ret.push(ruleName.split(Rule.seperator));
+        }
+
+        return ret;
+    }
 }
 
 Rule.seperator = String.fromCharCode(12288);

@@ -5,5 +5,8 @@
     "lodash": "registry:dt/lodash#4.14.0+20161110215204",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353",
     "raphael": "registry:dt/raphael#2.1.0+20160626232910"
+  },
+  "dependencies": {
+    "json-beautify": "github:perlmint/private_typings/json-beautify.d.ts#82d1092"
   }
 }

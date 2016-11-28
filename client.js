@@ -17031,7 +17031,7 @@
 	    add(t1, t2) {
 	        let key = Rule.toKey(t1, t2);
 	        if (this._rules.hasOwnProperty(key)) {
-	            throw new Error("Wrong Rule definition! duplicated rule");
+	            throw new Error("Wrong Rule definition! duplicated rule : " + t1 + ", " + t2);
 	        }
 	        else {
 	            this._rules[key] = 1;

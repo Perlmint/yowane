@@ -41,7 +41,7 @@ export class Rule {
     add(t1: string, t2: string): this {
         let key = Rule.toKey(t1, t2);
         if (this._rules.hasOwnProperty(key)) {
-            throw new Error("Wrong Rule definition! duplicated rule");
+            throw new Error("Wrong Rule definition! duplicated rule : " + t1 + ", " + t2);
         } else {
             this._rules[key] = 1;
             return this;

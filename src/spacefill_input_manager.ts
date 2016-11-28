@@ -1,6 +1,7 @@
 import { CanvasManager } from "./canvas_manager";
 import { SpaceFillRenderer } from "./renderer_spacefill";
 import { Point } from "./grid";
+import * as renderJSON from "json-beautify";
 
 export class SpaceFillInputManager {
     sequence: Point[] = [];
@@ -109,10 +110,10 @@ export class SpaceFillInputManager {
     }
 
     sequenceToString(): string {
-        const sequenceStrings = this.sequence.map(pt => `(${pt.x}, ${pt.y})`).join(", ");
-        return `{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;sequence: [${sequenceStrings}],<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;direction_sequence: [${this.relativeDirections.toString()}]<br/>
-}`;
+        const sequences = this.sequence.map(pt => `(${pt.x}, ${pt.y})`);
+        return renderJSON({
+            sequence: sequences,
+            direction_sequence: this.relativeDirections
+        }, null, 2, 66);
     }
 }

@@ -17050,6 +17050,13 @@
 	            return 0;
 	        }
 	    }
+	    toConfig() {
+	        let ret = [];
+	        for (const ruleName of _.keys(this._rules)) {
+	            ret.push(ruleName.split(Rule.seperator));
+	        }
+	        return ret;
+	    }
 	}
 	exports.Rule = Rule;
 	Rule.seperator = String.fromCharCode(12288);

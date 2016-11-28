@@ -24,12 +24,6 @@
         div.col-xs-12 {
             margin-bottom: 20px;
         }
-
-        #input_sequence {
-            padding: 5px;
-            background: lightgray;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -80,8 +74,11 @@
         <div id="oritatami" class="col-xs-6"></div>
     </div>
     <div class="row">
-        <div class="col-xs-12">
-            <div id="input_sequence">Please click and draw a shape</div>
+        <div class="col-xs-6">
+            <div id="input_sequence" class="well">Please click and draw a shape</div>
+        </div>
+        <div class="col-xs-6">
+            <pre id="oritatami_config" class="well">When input is ended, Oritatami config will be show here</pre>
         </div>
     </div>
 </div>

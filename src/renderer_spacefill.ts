@@ -7,8 +7,10 @@ import { Oritatami, OritatamiIterator } from "./oritatami";
 import "d3";
 import * as Raphael from "raphael";
 import * as $ from "jquery";
+import * as _ from "lodash";
 import { Renderer, Theme } from "./renderer";
 import { OritatamiRenderer, RenderIterator } from "./renderer_oritatami";
+import * as renderJSON from "json-beautify";
 
 const NODE_ANIMATION_MS = 500;
 const PATH_ANIMATION_MS = 300;
@@ -63,12 +65,16 @@ export class SpaceFillRenderer extends Renderer {
         const fillSeqs = filler.predictSequences(this.input.relativeDirections);
         const oritatami = this._oritatami;
         oritatami.createOritatamiHTML();
-        oritatami.oritatami = {
+        const oritatamiConfig = {
             delay: filler.delay,
-            rule: filler.rule,
+            rule: filler.rule.toConfig(),
             seed: filler.seed.map<[number, number, string]>(v => ([v[1].x, v[1].y, v[0]] as [number, number, string])),
             sequence: []
         };
+        oritatami.oritatami = oritatamiConfig;
+        $("#oritatami_config").text(renderJSON(Object.assign({}, oritatamiConfig, {
+            sequence: _.flatten(fillSeqs)
+        }), null, 2, 66));
         const grid = oritatami._grid;
 
         let idx = 0;

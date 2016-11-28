@@ -1,7 +1,29 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require("path");
 
-const oritatami = {
+const defaultConfig = {
+  resolve: {
+    extensions: ["", ".ts", ".js"]
+  },
+  module: {
+    loaders: [
+      { test: /\.tsx?$/, exclude: /^\.#/, loader: 'ts' }
+    ]
+  }
+};
+
+const spacefill = Object.assign({}, defaultConfig, {
+  entry: [
+    "./src/spacefill_entry.ts"
+  ],
+  output: {
+    path: path.resolve("./out"),
+    publicPath: "/static",
+    filename: "spacefill_entry.js"
+  }
+});
+
+const oritatami = Object.assign({}, defaultConfig, {
   entry: [
     "./src/client.ts"
   ],
@@ -9,14 +31,6 @@ const oritatami = {
       path: path.resolve("./out"),
       publicPath: "/static",
       filename: "client.js"
-  },
-  resolve: {
-    extensions: ["", ".ts"]
-  },
-  module: {
-    loaders: [
-        { test: /\.tsx?$/, exclude: /^\.#/, loader: 'ts' }
-    ]
   },
   plugins: [
     new CopyWebpackPlugin([
@@ -38,25 +52,6 @@ const oritatami = {
       }
     ])
   ]
-};
-
-const spacefill = {
-  entry: [
-    "./src/spacefill_entry.ts"
-  ],
-  output: {
-    path: path.resolve("./out"),
-    publicPath: "/static",
-    filename: "spacefill_entry.js"
-  },
-  resolve: {
-    extensions: ["", ".ts"]
-  },
-  module: {
-    loaders: [
-      { test: /\.tsx?$/, exclude: /^\.#/, loader: 'ts' }
-    ]
-  }
-};
+});
 
 module.exports = [oritatami, spacefill];
